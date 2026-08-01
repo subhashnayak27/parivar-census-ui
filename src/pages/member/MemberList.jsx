@@ -1,5 +1,258 @@
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+import PageHeader from "../../components/common/PageHeader";
+import CommonTable from "../../components/common/CommonTable";
+import CommonModal from "../../components/common/CommonModal";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import ActionButtons from "../../components/common/ActionButtons";
+import StatusBadge from "../../components/common/StatusBadge";
+import { getMemberById } from "../../services/memberService";
+import MemberForm from "./MemberForm";
+
+import {
+    getMembers,
+    deleteMember
+} from "../../services/memberService";
+
 function MemberList() {
-    return <h2>Member Management</h2>;
+
+    const [members, setMembers] = useState([]);
+    const [selectedMember, setSelectedMember] = useState(null);
+
+    const [showModal, setShowModal] = useState(false);
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+
+    useEffect(() => {
+
+        loadMembers();
+
+    }, []);
+
+    const loadMembers = async () => {
+
+        try {
+
+            const response = await getMembers();
+
+            setMembers(response.data.data);
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            toast.error("Failed to load members");
+
+        }
+
+    };
+
+    const columns = [
+
+        {
+            field: "id",
+            header: "ID"
+        },
+
+        {
+            field: "memberCode",
+            header: "Member Code"
+        },
+
+        {
+            field: "firstName",
+            header: "First Name"
+        },
+
+        {
+            field: "lastName",
+            header: "Last Name"
+        },
+
+        {
+            field: "gender",
+            header: "Gender"
+        },
+
+        {
+            field: "relationship",
+            header: "Relationship"
+        },
+
+        {
+            field: "familyHeadName",
+            header: "Family Head"
+        },
+
+        {
+            field: "mobileNo",
+            header: "Mobile"
+        },
+
+        {
+            field: "active",
+            header: "Status",
+
+            render: (row) => (
+                <StatusBadge active={row.active} />
+            )
+
+        }
+
+    ];
+
+    const deleteMemberRecord = async () => {
+
+        try {
+
+            await deleteMember(deleteId);
+
+            toast.success("Member deleted successfully");
+
+            loadMembers();
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+            toast.error("Failed to delete member");
+
+        }
+
+        finally {
+
+            setDeleteId(null);
+
+            setShowDeleteDialog(false);
+
+        }
+
+    };
+
+    return (
+
+        <div className="container-fluid">
+
+            <PageHeader
+                title="Member Management"
+                buttonText="Add Member"
+                onAdd={() => {
+
+                    setSelectedMember(null);
+
+                    setShowModal(true);
+
+                }}
+            />
+
+            <CommonTable
+
+                columns={columns}
+
+                data={members}
+
+                renderActions={(member) => (
+
+                    <ActionButtons
+
+                        onEdit={() => {
+
+                            setSelectedMember(member);
+
+                            setShowModal(true);
+
+                        }}
+
+                        onDelete={() => {
+
+                            setDeleteId(member.id);
+
+                            setShowDeleteDialog(true);
+
+                        }}
+
+                    />
+
+                )}
+
+            />
+
+            <CommonModal
+
+                show={showModal}
+
+                title={
+                    selectedMember
+                        ? "Edit Member"
+                        : "Add Member"
+                }
+
+                onClose={() => {
+
+                    setShowModal(false);
+
+                    setSelectedMember(null);
+
+                }}
+
+            >
+
+                <MemberForm
+
+                    member={selectedMember}
+
+                    onSuccess={() => {
+
+                        loadMembers();
+
+                        setShowModal(false);
+
+                        setSelectedMember(null);
+
+                    }}
+
+                    onClose={() => {
+
+                        setShowModal(false);
+
+                        setSelectedMember(null);
+
+                    }}
+
+                />
+
+            </CommonModal>
+
+            <ConfirmDialog
+
+                show={showDeleteDialog}
+
+                title="Delete Member"
+
+                message="Are you sure you want to delete this member?"
+
+                onConfirm={deleteMemberRecord}
+
+                onCancel={() => {
+
+                    setDeleteId(null);
+
+                    setShowDeleteDialog(false);
+
+                }}
+
+            />
+
+        </div>
+
+    );
+
 }
 
 export default MemberList;

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { createState, updateState } from "../../services/stateService";
+import { toast } from "react-toastify";
 
 function StateForm({ state, onSuccess, onClose }) {
 
@@ -45,13 +46,23 @@ function StateForm({ state, onSuccess, onClose }) {
 
             }
 
+            toast.success(
+                state
+                    ? "State updated successfully"
+                    : "State created successfully"
+            );
+
             onSuccess();
 
         } catch (error) {
 
             console.error(error);
 
-            alert(state ? "Failed to update state" : "Failed to create state");
+            toast.error(
+                state
+                    ? "Failed to update state"
+                    : "Failed to create state"
+            );
 
         }
 

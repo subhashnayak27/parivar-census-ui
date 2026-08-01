@@ -1,15 +1,13 @@
 import { Outlet } from "react-router-dom";
 
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
-import Footer from "../components/Footer";
+import Navbar from "./Navbar";
+import Sidebar from "./Sidebar";
+import Footer from "./Footer";
 
 function MainLayout() {
 
     return (
-
         <>
-
             <Navbar />
 
             <div className="container-fluid">
@@ -17,15 +15,11 @@ function MainLayout() {
                 <div className="row">
 
                     <div className="col-md-2 p-0">
-
                         <Sidebar />
-
                     </div>
 
                     <div className="col-md-10 p-4">
-
                         <Outlet />
-
                     </div>
 
                 </div>
@@ -33,9 +27,7 @@ function MainLayout() {
             </div>
 
             <Footer />
-
         </>
-
     );
 
 }
