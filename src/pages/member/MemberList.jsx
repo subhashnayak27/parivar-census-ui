@@ -9,11 +9,9 @@ import ActionButtons from "../../components/common/ActionButtons";
 import StatusBadge from "../../components/common/StatusBadge";
 import { getMemberById } from "../../services/memberService";
 import MemberForm from "./MemberForm";
-
-import {
-    getMembers,
-    deleteMember
-} from "../../services/memberService";
+import ExcelToolbar from "../../components/common/ExcelToolbar";
+import { uploadMembers, downloadTemplate, exportMembers} from "../../services/memberService";
+import { getMembers, deleteMember } from "../../services/memberService";
 
 function MemberList() {
 
@@ -104,7 +102,88 @@ function MemberList() {
         }
 
     ];
+    const handleDownloadTemplate = async () => {
 
+        try {
+
+            const response = await downloadTemplate();
+
+            const url = window.URL.createObjectURL(
+                new Blob([response.data])
+            );
+
+            const link = document.createElement("a");
+
+            link.href = url;
+            link.download = "Member_Bulk_Upload_Template.xlsx";
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+
+        } catch (error) {
+
+            console.error(error);
+            alert("Unable to download template.");
+        }
+    };
+    const handleExport = async () => {
+
+        try {
+
+            const response = await exportMembers();
+
+            const url = window.URL.createObjectURL(
+                new Blob([response.data])
+            );
+
+            const link = document.createElement("a");
+
+            link.href = url;
+            link.download = "Members.xlsx";
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+
+        } catch (error) {
+
+            console.error(error);
+            alert("Export failed.");
+        }
+    };
+    const handleUpload = async (event) => {
+
+        const file = event.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        try {
+
+            const response = await uploadMembers(file);
+
+            alert(response.data.message);
+
+            // Refresh member list
+            loadMembers();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                error.response?.data?.message || "Upload failed."
+            );
+        }
+
+        event.target.value = "";
+    };
     const deleteMemberRecord = async () => {
 
         try {
@@ -150,7 +229,11 @@ function MemberList() {
 
                 }}
             />
-
+            <ExcelToolbar
+                onDownloadTemplate={handleDownloadTemplate}
+                onUpload={handleUpload}
+                onExport={handleExport}
+            />
             <CommonTable
 
                 columns={columns}

@@ -4,7 +4,7 @@ function Footer() {
 
         <footer className="bg-light text-center p-3">
 
-            © 2026 Parivar Census System
+            © 2026 Shringirishi Census System
 
         </footer>
 

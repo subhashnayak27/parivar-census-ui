@@ -8,6 +8,7 @@ import VillageList from "../pages/village/VillageList";
 import FamilyList from "../pages/family/FamilyList";
 import MemberList from "../pages/member/MemberList";
 
+
 function AppRoutes() {
 
     return (
@@ -19,17 +20,11 @@ function AppRoutes() {
                 <Route path="/" element={<MainLayout />}>
 
                     <Route index element={<Dashboard />} />
-
                     <Route path="states" element={<StateList />} />
-
                     <Route path="districts" element={<DistrictList />} />
-
                     <Route path="villages" element={<VillageList />} />
-
                     <Route path="families" element={<FamilyList />} />
-
                     <Route path="members" element={<MemberList />} />
-
                 </Route>
 
             </Routes>

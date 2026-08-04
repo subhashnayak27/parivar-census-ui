@@ -7,7 +7,7 @@ function Navbar() {
             <div className="container-fluid">
 
                 <span className="navbar-brand fw-bold">
-                    👨‍👩‍👧‍👦 Parivar Census System
+                    👨‍👩‍👧‍👦 Shringirishi Census System
                 </span>
 
                 <div className="d-flex align-items-center">

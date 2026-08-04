@@ -194,26 +194,22 @@ function MemberForm({
             villageId: "",
             familyId: "",
 
-            memberCode: member.memberCode,
             firstName: member.firstName,
             lastName: member.lastName,
             gender: member.gender,
             dateOfBirth: member.dateOfBirth,
+            gotra: member.gotra || "",
+            pata: member.pata || "",
+            kuldevi: member.kuldevi || "",
 
             alive: member.alive,
 
             dateOfDeath: member.dateOfDeath,
-
             relationship: member.relationship,
-
             maritalStatus: member.maritalStatus,
-
             mobileNo: member.mobileNo,
-
             aadhaarNo: member.aadhaarNo,
-
             occupation: member.occupation,
-
             education: member.education
 
         });
@@ -469,7 +465,7 @@ const onSubmit = async (data) => {
 
             <div className="row">
 
-                <div className="col-md-6">
+           {/*      <div className="col-md-6">
 
                     <div className="mb-3">
 
@@ -486,7 +482,7 @@ const onSubmit = async (data) => {
 
                     </div>
 
-                </div>
+                </div> */}
 
                 <div className="col-md-6">
 
@@ -780,6 +776,30 @@ const onSubmit = async (data) => {
 
                             />
 
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Gotra</label>
+                            <input
+                                className="form-control"
+                                {...register("gotra")}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Pata</label>
+                            <input
+                                className="form-control"
+                                {...register("pata")}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Kuldevi</label>
+                            <input
+                                className="form-control"
+                                {...register("kuldevi")}
+                            />
                         </div>
 
                         <button
