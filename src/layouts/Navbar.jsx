@@ -1,4 +1,28 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import {
+    logout,
+    getFullName,
+    getUsername
+} from "../utils/tokenStorage";
+
 function Navbar() {
+
+    const navigate = useNavigate();
+
+    const [showMenu, setShowMenu] = useState(false);
+
+    const fullName = getFullName();
+    const username = getUsername();
+
+    const handleLogout = () => {
+
+        logout();
+
+        navigate("/login", { replace: true });
+
+    };
 
     return (
 
@@ -20,7 +44,67 @@ function Navbar() {
 
                     <i className="bi bi-bell fs-4 text-white me-3"></i>
 
-                    <i className="bi bi-person-circle fs-3 text-white"></i>
+                    <div className="position-relative">
+
+                        <button
+                            type="button"
+                            className="btn btn-primary d-flex align-items-center border-0"
+                            onClick={() => setShowMenu(!showMenu)}
+                        >
+
+                            <i className="bi bi-person-circle fs-3 me-2"></i>
+
+                            <span className="me-2">
+                                {fullName || username || "User"}
+                            </span>
+
+                            <i className="bi bi-chevron-down"></i>
+
+                        </button>
+
+                        {showMenu && (
+
+                            <div
+                                className="position-absolute bg-white shadow rounded p-2"
+                                style={{
+                                    right: 0,
+                                    top: "100%",
+                                    minWidth: "200px",
+                                    zIndex: 1050
+                                }}
+                            >
+
+                                <div className="px-3 py-2">
+
+                                    <div className="fw-bold">
+                                        {fullName || username}
+                                    </div>
+
+                                    <small className="text-muted">
+                                        {username}
+                                    </small>
+
+                                </div>
+
+                                <hr className="my-1" />
+
+                                <button
+                                    type="button"
+                                    className="btn btn-link text-danger text-decoration-none w-100 text-start px-3"
+                                    onClick={handleLogout}
+                                >
+
+                                    <i className="bi bi-box-arrow-right me-2"></i>
+
+                                    Logout
+
+                                </button>
+
+                            </div>
+
+                        )}
+
+                    </div>
 
                 </div>
 
