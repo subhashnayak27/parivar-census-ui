@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
+import { getCurrentRole } from "../utils/roleUtils";
 
 function Sidebar() {
 
     const location = useLocation();
+    const role = getCurrentRole();
 
     const menuItems = [
         {
@@ -37,6 +39,22 @@ function Sidebar() {
         }
     ];
 
+    // ================================
+    // User Management
+    // SUPER_ADMIN + ADMIN only
+    // ================================
+
+    if (
+        role === "SUPER_ADMIN" ||
+        role === "ADMIN"
+    ) {
+        menuItems.push({
+            name: "User Management",
+            path: "/users",
+            icon: "bi-person-gear"
+        });
+    }
+
     return (
 
         <div className="bg-dark text-white vh-100">
@@ -51,45 +69,39 @@ function Sidebar() {
 
             <ul className="nav flex-column mt-3">
 
-                {
+                {menuItems.map((item) => (
 
-                    menuItems.map((item) => (
+                    <li
+                        className="nav-item"
+                        key={item.path}
+                    >
 
-                        <li
-                            className="nav-item"
-                            key={item.path}
+                        <Link
+                            to={item.path}
+                            className={`nav-link text-white px-4 py-3 ${
+                                location.pathname === item.path
+                                    ? "bg-primary"
+                                    : ""
+                            }`}
                         >
 
-                            <Link
+                            <i
+                                className={`bi ${item.icon} me-2`}
+                            ></i>
 
-                                to={item.path}
+                            {item.name}
 
-                                className={`nav-link text-white px-4 py-3 ${
-                                    location.pathname === item.path
-                                        ? "bg-primary"
-                                        : ""
-                                }`}
+                        </Link>
 
-                            >
+                    </li>
 
-                                <i className={`bi ${item.icon} me-2`}></i>
-
-                                {item.name}
-
-                            </Link>
-
-                        </li>
-
-                    ))
-
-                }
+                ))}
 
             </ul>
 
         </div>
 
     );
-
 }
 
 export default Sidebar;

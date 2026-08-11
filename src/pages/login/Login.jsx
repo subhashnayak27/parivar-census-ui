@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../../services/AuthService";
 import { saveAuth } from "../../utils/tokenStorage";
 import { Form, Button, Card, Container } from "react-bootstrap";
-
+import { Link } from "react-router-dom";
 function Login() {
 
     const [username, setUsername] = useState("");
@@ -76,6 +76,13 @@ function Login() {
                             Login
 
                         </Button>
+                        <div className="text-center mt-3">
+                            <span>Don't have an account? </span>
+
+                            <Link to="/register">
+                                Register
+                            </Link>
+                        </div>
 
                     </Form>
 

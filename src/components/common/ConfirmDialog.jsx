@@ -3,7 +3,8 @@ function ConfirmDialog({
     title,
     message,
     onConfirm,
-    onCancel
+    onCancel,
+    confirmText = "Delete"
 }) {
 
     if (!show) return null;
@@ -40,6 +41,7 @@ function ConfirmDialog({
                     <div className="modal-footer">
 
                         <button
+                            type="button"
                             className="btn btn-secondary"
                             onClick={onCancel}
                         >
@@ -47,10 +49,11 @@ function ConfirmDialog({
                         </button>
 
                         <button
+                            type="button"
                             className="btn btn-danger"
                             onClick={onConfirm}
                         >
-                            Delete
+                            {confirmText}
                         </button>
 
                     </div>
@@ -62,7 +65,6 @@ function ConfirmDialog({
         </div>
 
     );
-
 }
 
 export default ConfirmDialog;

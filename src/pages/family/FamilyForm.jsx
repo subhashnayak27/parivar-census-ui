@@ -104,17 +104,15 @@ function FamilyForm({
 
         try {
 
-            // Set basic fields
             reset({
-
                 stateId: String(family.stateId),
                 districtId: "",
                 villageId: "",
-                familyHeadName: family.familyHeadName,
-                address: family.address,
-                mobileNo: family.mobileNo,
-                rationCardNo: family.rationCardNo
-
+                familyCode: family.familyCode || "",
+                familyHeadName: family.familyHeadName || "",
+                address: family.address || "",
+                mobileNo: family.mobileNo || "",
+                rationCardNo: family.rationCardNo || ""
             });
 
             // Load districts
@@ -139,10 +137,12 @@ function FamilyForm({
                 String(family.villageId)
             );
 
-        }
-        catch (error) {
+        } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Failed to load family edit data",
+                error
+            );
 
         }
 
@@ -152,13 +152,18 @@ function FamilyForm({
 
         try {
 
-            const response = await getStates();
+            const response = await getStates({
+                page: 0,
+                size: 1000,
+                sortBy: "id",
+                direction: "asc"
+            });
 
-            setStates(response.data.data);
+            setStates(response.data.data.content);
 
         } catch (error) {
 
-            console.error(error);
+            console.error("Failed to load states", error);
 
             toast.error("Failed to load states");
 

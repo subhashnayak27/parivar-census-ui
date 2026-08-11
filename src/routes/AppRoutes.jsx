@@ -2,16 +2,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 import ProtectedRoute from "./ProtectedRoute";
-
+import UserList from "../pages/users/UserList";
 import Login from "../pages/login/Login";
-
+import Register from "../pages/auth/Register";
 import Dashboard from "../pages/dashboard/Dashboard";
 import StateList from "../pages/state/StateList";
 import DistrictList from "../pages/district/DistrictList";
 import VillageList from "../pages/village/VillageList";
 import FamilyList from "../pages/family/FamilyList";
 import MemberList from "../pages/member/MemberList";
-import UserList from "../pages/users/UserList";
 
 function AppRoutes() {
 
@@ -21,10 +20,8 @@ function AppRoutes() {
             <Routes>
 
                 {/* Public */}
-                <Route
-                    path="/login"
-                    element={<Login />}
-                />
+                <Route  path="/login" element={<Login />}/>
+                <Route path="/register" element={<Register />} />
 
                 {/* Protected */}
                 <Route element={<ProtectedRoute />}>
@@ -62,10 +59,9 @@ function AppRoutes() {
                             element={<MemberList />}
                         />
 
-                        <Route
-                            path="users"
-                            element={<UserList />}
-                        />
+                         <Route
+                             path="users"element={<UserList />}
+                         />
 
                     </Route>
 

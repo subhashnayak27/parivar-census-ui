@@ -114,9 +114,14 @@ function MemberForm({
 
         try {
 
-            const response = await getStates();
+            const response = await getStates({
+                page: 0,
+                size: 1000,
+                sortBy: "id",
+                direction: "asc"
+            });
 
-            setStates(response.data.data);
+            setStates(response.data.data.content);
 
         }
 

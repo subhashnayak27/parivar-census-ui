@@ -1,4 +1,8 @@
-const getCurrentRole = () => {
+// ================================
+// Get Current Role
+// ================================
+
+export const getCurrentRole = () => {
 
     const role = localStorage.getItem("role");
 
@@ -16,6 +20,7 @@ const getCurrentRole = () => {
 // ================================
 // Create
 // ================================
+
 export const canCreate = () => {
 
     const role = getCurrentRole();
@@ -31,6 +36,7 @@ export const canCreate = () => {
 // ================================
 // Edit
 // ================================
+
 export const canEdit = () => {
 
     const role = getCurrentRole();
@@ -46,6 +52,7 @@ export const canEdit = () => {
 // ================================
 // Delete
 // ================================
+
 export const canDelete = () => {
 
     const role = getCurrentRole();
@@ -60,6 +67,7 @@ export const canDelete = () => {
 // ================================
 // Upload Excel
 // ================================
+
 export const canUpload = () => {
 
     const role = getCurrentRole();
@@ -75,6 +83,7 @@ export const canUpload = () => {
 // ================================
 // Download Template
 // ================================
+
 export const canDownloadTemplate = () => {
 
     const role = getCurrentRole();
@@ -90,6 +99,7 @@ export const canDownloadTemplate = () => {
 // ================================
 // Export Excel
 // ================================
+
 export const canExport = () => {
 
     const role = getCurrentRole();
@@ -97,6 +107,70 @@ export const canExport = () => {
     return [
         "SUPER_ADMIN",
         "ADMIN",
-        "DATA_ENTRY",
+        "DATA_ENTRY"
     ].includes(role);
+};
+
+
+// ================================
+// User Management
+// ================================
+
+// View Users
+export const canViewUsers = () => {
+
+    const role = getCurrentRole();
+
+    return [
+        "SUPER_ADMIN",
+        "ADMIN"
+    ].includes(role);
+};
+
+
+// Create User
+export const canCreateUser = () => {
+
+    const role = getCurrentRole();
+
+    return role === "SUPER_ADMIN";
+};
+
+
+// Edit User
+export const canEditUser = () => {
+
+    const role = getCurrentRole();
+
+    return role === "SUPER_ADMIN";
+};
+
+
+// Delete User
+export const canDeleteUser = () => {
+
+    const role = getCurrentRole();
+
+    return role === "SUPER_ADMIN";
+};
+
+
+// Activate / Deactivate User
+export const canChangeUserStatus = () => {
+
+    const role = getCurrentRole();
+
+    return [
+        "SUPER_ADMIN",
+        "ADMIN"
+    ].includes(role);
+};
+
+
+// Change User Role
+export const canChangeUserRole = () => {
+
+    const role = getCurrentRole();
+
+    return role === "SUPER_ADMIN";
 };

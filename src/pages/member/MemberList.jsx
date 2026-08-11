@@ -432,24 +432,26 @@ function MemberList() {
                 renderActions={(member) => (
 
                     <ActionButtons
-                                           onEdit={
-                                                canEdit()
-                                                    ? () => {
-                                                        setSelectedFamily(family);
-                                                        setShowModal(true);
-                                                    }
-                                                    : undefined
-                                            }
 
-                                            onDelete={
-                                                canDelete()
-                                                    ? () => {
-                                                        setDeleteId(family.id);
-                                                        setShowDeleteDialog(true);
-                                                    }
-                                                    : undefined
-                                            }
-                                        />
+                        onEdit={
+                            canEdit()
+                                ? () => {
+                                    setSelectedMember(member);
+                                    setShowModal(true);
+                                }
+                                : undefined
+                        }
+
+                        onDelete={
+                            canDelete()
+                                ? () => {
+                                    setDeleteId(member.id);
+                                    setShowDeleteDialog(true);
+                                }
+                                : undefined
+                        }
+
+                    />
 
                 )}
 

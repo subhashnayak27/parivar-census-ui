@@ -1,4 +1,9 @@
-function ActionButtons({ onEdit, onDelete }) {
+function ActionButtons({
+    onEdit,
+    onDelete,
+    onStatus,
+    isActive
+}) {
 
     return (
         <div className="d-flex gap-2">
@@ -11,6 +16,31 @@ function ActionButtons({ onEdit, onDelete }) {
                     title="Edit"
                 >
                     <i className="bi bi-pencil"></i>
+                </button>
+            )}
+
+            {onStatus && (
+                <button
+                    type="button"
+                    className={
+                        isActive
+                            ? "btn btn-secondary btn-sm"
+                            : "btn btn-success btn-sm"
+                    }
+                    onClick={onStatus}
+                    title={
+                        isActive
+                            ? "Deactivate"
+                            : "Activate"
+                    }
+                >
+                    <i
+                        className={
+                            isActive
+                                ? "bi bi-person-x"
+                                : "bi bi-person-check"
+                        }
+                    ></i>
                 </button>
             )}
 
