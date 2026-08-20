@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../services/AuthService";
+import { login } from "../../services/authService";
 import { saveAuth } from "../../utils/tokenStorage";
 import { Form, Button, Card, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
