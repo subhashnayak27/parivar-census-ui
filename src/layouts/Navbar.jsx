@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -7,6 +8,11 @@ import {
 } from "../utils/tokenStorage";
 
 function Navbar() {
+    const { t, i18n } = useTranslation();
+
+    const changeLanguage = (language) => {
+        i18n.changeLanguage(language);
+    };
 
     const navigate = useNavigate();
     const menuRef = useRef(null);
@@ -79,7 +85,7 @@ function Navbar() {
             <div className="container-fluid">
 
                 <span className="navbar-brand fw-bold">
-                    👨‍👩‍👧‍👦 Shringirishi Census System
+                    👨‍👩‍👧‍👦 {t("appName")}
                 </span>
 
                 <div className="d-flex align-items-center">
@@ -89,6 +95,20 @@ function Navbar() {
                         style={{ width: "250px" }}
                         placeholder="Search..."
                     />
+                    <select
+                        className="form-select form-select-sm me-3"
+                        style={{ width: "120px" }}
+                        value={i18n.language}
+                        onChange={(e) => changeLanguage(e.target.value)}
+                    >
+                        <option value="en">
+                            English
+                        </option>
+
+                        <option value="hi">
+                            हिन्दी
+                        </option>
+                    </select>
 
                     <i className="bi bi-bell fs-4 text-white me-3"></i>
 

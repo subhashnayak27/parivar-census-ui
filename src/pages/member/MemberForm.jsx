@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-
+import { useTranslation } from "react-i18next";
 import {
     createMember,
     updateMember
@@ -113,7 +113,7 @@ function MemberForm({
     const [districts, setDistricts] = useState([]);
     const [villages, setVillages] = useState([]);
     const [families, setFamilies] = useState([]);
-
+    const { t } = useTranslation();
     const selectedStateId = watch("stateId");
     const selectedDistrictId = watch("districtId");
     const selectedVillageId = watch("villageId");
@@ -361,7 +361,7 @@ const onSubmit = async (data) => {
             <div className="mb-3">
 
                 <label className="form-label">
-                    State
+                    {t("location.state")}
                 </label>
 
                 <select
@@ -573,7 +573,7 @@ const onSubmit = async (data) => {
                     <div className="mb-3">
 
                         <label className="form-label">
-                            First Name
+                            {t("member.firstName")}
                         </label>
 
                         <input

@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 import HeroBanner from "./HeroBanner";
 import { getDashboard } from "../../services/dashboardService";
 import DashboardCard from "./DashboardCard";
-
+import { useTranslation } from "react-i18next";
 function Dashboard() {
-
+    const { t } = useTranslation();
     const [dashboard, setDashboard] = useState({});
 
     useEffect(() => {
@@ -47,14 +47,14 @@ function Dashboard() {
                     </div>
             <h2 className="mb-4">
 
-                📊 Shringirishi Census Dashboard
+                📊  {t("dashboardTitle")}
 
             </h2>
 
             <div className="row">
 
                 <DashboardCard
-                    title="States"
+                    title={t("location.state")}
                     value={dashboard.totalStates}
                     icon="🏛"
                     color="primary"
@@ -62,7 +62,7 @@ function Dashboard() {
                 />
 
                 <DashboardCard
-                    title="Districts"
+                    title={t("location.district")}
                     value={dashboard.totalDistricts}
                     icon="📍"
                     color="success"
@@ -70,7 +70,7 @@ function Dashboard() {
                 />
 
                 <DashboardCard
-                    title="Villages"
+                    title={t("location.village")}
                     value={dashboard.totalVillages}
                     icon="🌾"
                     color="warning"
@@ -78,7 +78,7 @@ function Dashboard() {
                 />
 
                 <DashboardCard
-                    title="Families"
+                    title={t("location.family")}
                     value={dashboard.totalFamilies}
                     icon="👨‍👩‍👧"
                     color="danger"
@@ -86,7 +86,7 @@ function Dashboard() {
                 />
 
                 <DashboardCard
-                    title="Members"
+                    title={t("member.title")}
                     value={dashboard.totalMembers}
                     icon="👤"
                     color="info"
@@ -94,7 +94,7 @@ function Dashboard() {
                 />
 
                 <DashboardCard
-                    title="Active"
+                    title={t("status.active")}
                     value={dashboard.activeMembers}
                     icon="✅"
                     color="secondary"

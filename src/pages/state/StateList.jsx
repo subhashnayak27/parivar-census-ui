@@ -10,6 +10,7 @@ import StatusBadge from "../../components/common/StatusBadge";
 import Pagination from "../../components/common/Pagination";
 import SearchBox from "../../components/common/SearchBox";
 import StateForm from "./StateForm";
+import { useTranslation } from "react-i18next";
 
 import {
     getStates,
@@ -18,7 +19,7 @@ import {
 } from "../../services/stateService";
 
 function StateList() {
-
+    const { t, i18n } = useTranslation();
     const [states, setStates] = useState([]);
 
     const [loading, setLoading] = useState(false);
@@ -152,8 +153,8 @@ function StateList() {
         <div className="container-fluid">
 
                <PageHeader
-                   title="State Management"
-                   buttonText="Add State"
+                   title={t("stateManagement.title")}
+                   buttonText={t("stateManagement.addState")}
                    onAdd={() => {
                        setSelectedState(null);
                        setShowModal(true);
@@ -206,8 +207,8 @@ function StateList() {
                 show={showModal}
                 title={
                     selectedState
-                        ? "Edit State"
-                        : "Add State"
+                        ? t("stateManagement.editState")
+                        : t("stateManagement.addState")
                 }
                 onClose={() => {
 
@@ -247,7 +248,7 @@ function StateList() {
 
                 title="Delete State"
 
-                message="Are you sure you want to delete this state?"
+                message={t("stateManagement.confirmDelete")}
 
                 onConfirm={deleteStateRecord}
 

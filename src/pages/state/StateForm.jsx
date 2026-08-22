@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { createState, updateState } from "../../services/stateService";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 function StateForm({ state, onSuccess, onClose }) {
-
+const { t, i18n } = useTranslation();
     const {
         register,
         handleSubmit,
@@ -75,7 +76,7 @@ function StateForm({ state, onSuccess, onClose }) {
             <div className="mb-3">
 
                 <label className="form-label">
-                    State Code
+                   {t("stateTable.code")}
                 </label>
 
                 <input

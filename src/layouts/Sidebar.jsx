@@ -1,39 +1,40 @@
 import { Link, useLocation } from "react-router-dom";
 import { getCurrentRole } from "../utils/roleUtils";
-
+import { useTranslation } from "react-i18next";
 function Sidebar() {
 
+    const { t, i18n } = useTranslation();
     const location = useLocation();
     const role = getCurrentRole();
 
     const menuItems = [
         {
-            name: "Dashboard",
+            name: t("dashboard"),
             path: "/",
             icon: "bi-speedometer2"
         },
         {
-            name: "States",
+            name: t("location.state"),
             path: "/states",
             icon: "bi-map"
         },
         {
-            name: "Districts",
+            name: t("location.district"),
             path: "/districts",
             icon: "bi-building"
         },
         {
-            name: "Villages",
+            name: t("location.village"),
             path: "/villages",
             icon: "bi-house-door"
         },
         {
-            name: "Families",
+            name: t("location.family"),
             path: "/families",
             icon: "bi-people"
         },
         {
-            name: "Members",
+            name: t("member.title"),
             path: "/members",
             icon: "bi-person"
         }

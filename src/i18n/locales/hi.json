@@ -1,0 +1,63 @@
+{
+  "appName": "श्रृंगीऋषि जनगणना प्रणाली",
+  "dashboardTitle": "श्रृंगीऋषि जनगणना डैशबोर्ड",
+  "dashboard": "डैशबोर्ड",
+
+  "navbar": {
+    "search": "खोजें...",
+    "logout": "लॉग आउट",
+    "language": "भाषा"
+  },
+
+  "common": {
+    "save": "सहेजें",
+    "update": "अपडेट करें",
+    "cancel": "रद्द करें",
+    "select": "चुनें"
+  },
+
+  "member": {
+    "title": "सदस्य",
+    "firstName": "पहला नाम",
+    "lastName": "उपनाम",
+    "gender": "लिंग",
+    "dateOfBirth": "जन्म तिथि",
+    "alive": "जीवित",
+    "dateOfDeath": "मृत्यु तिथि",
+    "relationship": "संबंध",
+    "maritalStatus": "वैवाहिक स्थिति",
+    "mobileNo": "मोबाइल नंबर",
+    "aadhaarNo": "आधार नंबर",
+    "occupation": "व्यवसाय",
+    "education": "शिक्षा",
+    "gotra": "गोत्र",
+    "pata": "पटा",
+    "kuldevi": "कुलदेवी"
+  },
+  "location": {
+    "state": "राज्य",
+    "district": "ज़िला",
+    "village": "गाँव",
+    "family": "परिवार"
+  },
+  "status": {
+    "active": "सक्रिय",
+    "deactive": "निष्क्रिय"
+  },
+  "stateManagement": {
+    "title": "राज्य प्रबंधन",
+    "id": "राज्य आईडी",
+    "code": "राज्य कोड",
+    "name": "राज्य नाम",
+    "status": "स्थिति",
+    "action": "क्रिया",
+    "addState": "राज्य जोड़ें",
+    "editState": "राज्य संपादित करें",
+    "deleteState": "राज्य हटाएँ",
+    "confirmDelete": "क्या आप वाकई इस राज्य को हटाना चाहते हैं?",
+    "successMessage": "राज्य सफलतापूर्वक हटाया गया",
+    "errorMessage": "राज्य हटाने में विफल"
+  }
+
+
+}
