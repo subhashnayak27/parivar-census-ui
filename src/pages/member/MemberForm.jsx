@@ -12,6 +12,76 @@ import { getDistrictsByState } from "../../services/districtService";
 import { getVillagesByDistrict } from "../../services/villageService";
 import { getFamiliesByVillage } from "../../services/familyService";
 
+const gotras = [
+    {
+        gotraName: "Bharadwaj",
+        pata: ["Pandey", "Patha", "Ghuratiya", "Setwara"]
+    },
+    {
+        gotraName: "Vats",
+        pata: ["Varmele", "Chenthara", "Vajanya", "Dubey"]
+    },
+    {
+        gotraName: "Kashyap",
+        pata: ["Nekara", "Tripathi", "Tiwari"]
+    },
+    {
+        gotraName: "Katyayan",
+        pata: ["Pariya", "Guta", "Masand", "Chaubey"]
+    },
+    {
+        gotraName: "Gautam (Dhananjay)",
+        pata: ["Joshi"]
+    },
+    {
+        gotraName: "Garg",
+        pata: ["Jatariya", "Gangele"]
+    },
+    {
+        gotraName: "Shandilya",
+        pata: ["Bhatt"]
+    },
+    {
+        gotraName: "Kavist",
+        pata: ["Nagar", "Pathak"]
+    },
+    {
+        gotraName: "Upamanyu",
+        pata: ["Agariya"]
+    },
+    {
+        gotraName: "Sankritya",
+        pata: ["Vinda"]
+    },
+    {
+        gotraName: "Atri",
+        pata: ["Rayriya", "Mishra"]
+    },
+    {
+        gotraName: "Parashar",
+        pata: ["Laktakiya", "Patairiya"]
+    },
+    {
+        gotraName: "Kaushal (Kashyap)",
+        pata: ["Vishwamitra"]
+    },
+    {
+        gotraName: "Sanakadik",
+        pata: ["Pidoliya", "Upadhyay"]
+    },
+    {
+        gotraName: "Yamdagni",
+        pata: ["Kyore"]
+    },
+    {
+        gotraName: "Durvasa",
+        pata: ["Dodansiya", "Pujari"]
+    },
+    {
+        gotraName: "Vashishtha",
+        pata: ["Jhank", "Purohit"]
+    }
+];
 function MemberForm({
 
     member,
@@ -47,6 +117,7 @@ function MemberForm({
     const selectedStateId = watch("stateId");
     const selectedDistrictId = watch("districtId");
     const selectedVillageId = watch("villageId");
+    const selectedGotra = watch("gotra");
     const alive = watch("alive");
 
     useEffect(() => {
@@ -273,6 +344,14 @@ const onSubmit = async (data) => {
                     }
 
                 };
+           const handleGotraChange = (e) => {
+               const gotraName = e.target.value;
+
+               setValue("gotra", gotraName);
+
+               // Clear old Pata when Gotra changes
+               setValue("pata", "");
+           };
     return (
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -783,22 +862,62 @@ const onSubmit = async (data) => {
 
                         </div>
 
+
+                        {/* Gotra */}
                         <div className="mb-3">
-                            <label className="form-label">Gotra</label>
-                            <input
-                                className="form-control"
+                            <label className="form-label">
+                                Gotra
+                            </label>
+
+                            <select
+                                className="form-select"
                                 {...register("gotra")}
-                            />
+                                onChange={handleGotraChange}
+                            >
+                                <option value="">
+                                    Select Gotra
+                                </option>
+
+                                {gotras.map((g) => (
+                                    <option
+                                        key={g.gotraName}
+                                        value={g.gotraName}
+                                    >
+                                        {g.gotraName}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
+                        {/* Pata */}
                         <div className="mb-3">
-                            <label className="form-label">Pata</label>
-                            <input
-                                className="form-control"
+                            <label className="form-label">
+                                Pata
+                            </label>
+
+                            <select
+                                className="form-select"
                                 {...register("pata")}
-                            />
+                                disabled={!selectedGotra}
+                            >
+                                <option value="">
+                                    Select Pata
+                                </option>
+
+                                {gotras
+                                    .find((g) => g.gotraName === selectedGotra)
+                                    ?.pata.map((pataName) => (
+                                        <option
+                                            key={pataName}
+                                            value={pataName}
+                                        >
+                                            {pataName}
+                                        </option>
+                                    ))}
+                            </select>
                         </div>
 
+                                 {/* Kuldevi */}
                         <div className="mb-3">
                             <label className="form-label">Kuldevi</label>
                             <input

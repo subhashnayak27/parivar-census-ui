@@ -1,9 +1,34 @@
+import { useEffect } from "react";
+
 function CommonModal({
     show,
     title,
     onClose,
     children
 }) {
+
+    useEffect(() => {
+
+        const handleKeyDown = (event) => {
+
+            if (event.key === "Escape") {
+                onClose();
+            }
+
+        };
+
+        if (show) {
+            document.addEventListener("keydown", handleKeyDown);
+        }
+
+        return () => {
+            document.removeEventListener(
+                "keydown",
+                handleKeyDown
+            );
+        };
+
+    }, [show, onClose]);
 
     if (!show) return null;
 
@@ -25,6 +50,7 @@ function CommonModal({
                         </h5>
 
                         <button
+                            type="button"
                             className="btn-close"
                             onClick={onClose}
                         ></button>

@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { useEffect, useRef, useState } from "react";
 import {
     logout,
     getFullName,
@@ -10,12 +9,61 @@ import {
 function Navbar() {
 
     const navigate = useNavigate();
-
+    const menuRef = useRef(null);
     const [showMenu, setShowMenu] = useState(false);
 
     const fullName = getFullName();
     const username = getUsername();
+    useEffect(() => {
 
+        const handleKeyDown = (event) => {
+
+            if (event.key === "Escape") {
+                setShowMenu(false);
+            }
+
+        };
+
+        const handleClickOutside = (event) => {
+
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target)
+            ) {
+                setShowMenu(false);
+            }
+
+        };
+
+        if (showMenu) {
+
+            document.addEventListener(
+                "keydown",
+                handleKeyDown
+            );
+
+            document.addEventListener(
+                "mousedown",
+                handleClickOutside
+            );
+
+        }
+
+        return () => {
+
+            document.removeEventListener(
+                "keydown",
+                handleKeyDown
+            );
+
+            document.removeEventListener(
+                "mousedown",
+                handleClickOutside
+            );
+
+        };
+
+    }, [showMenu]);
     const handleLogout = () => {
 
         logout();
