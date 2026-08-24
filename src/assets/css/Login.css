@@ -12,7 +12,7 @@
             rgba(5, 25, 60, 0.25),
             rgba(5, 25, 60, 0.25)
         ),
-        url("src/assets/images/shringirishi-temple.jpg");
+        url("../../assets/images/shringirishi-temple.jpg");
 
     background-size: cover;
     background-position: center;
