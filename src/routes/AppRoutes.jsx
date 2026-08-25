@@ -11,7 +11,8 @@ import DistrictList from "../pages/district/DistrictList";
 import VillageList from "../pages/village/VillageList";
 import FamilyList from "../pages/family/FamilyList";
 import MemberList from "../pages/member/MemberList";
-
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import ResetPassword from "../pages/auth/ResetPassword";
 function AppRoutes() {
 
     return (
@@ -22,7 +23,8 @@ function AppRoutes() {
                 {/* Public */}
                 <Route  path="/login" element={<Login />}/>
                 <Route path="/register" element={<Register />} />
-
+                <Route path="/forgot-password"  element={<ForgotPassword />}/>
+                <Route path="/reset-password"  element={<ResetPassword />}/>
                 {/* Protected */}
                 <Route element={<ProtectedRoute />}>
 

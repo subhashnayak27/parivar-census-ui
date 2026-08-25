@@ -320,6 +320,18 @@ function Login() {
 
                             </Form.Group>
 
+                            <div className="text-end mb-3">
+
+                                <Link
+                                    to="/forgot-password"
+                                    className="forgot-password-link"
+                                >
+
+                                    Forgot Password?
+
+                                </Link>
+
+                            </div>
 
                             <Button
                                 className="w-100 login-button"

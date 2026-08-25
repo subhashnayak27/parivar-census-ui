@@ -16,3 +16,30 @@ export const registerUser = async (user) => {
 
     return response.data;
 };
+
+export const forgotPassword = (email) => {
+
+    return api.post(
+        "/auth/forgot-password",
+        {
+            email
+        }
+    );
+
+};
+
+
+export const resetPassword = (
+    token,
+    newPassword
+) => {
+
+    return api.post(
+        "/auth/reset-password",
+        {
+            token,
+            newPassword
+        }
+    );
+
+};
