@@ -10,6 +10,7 @@ import StateList from "../pages/state/StateList";
 import DistrictList from "../pages/district/DistrictList";
 import VillageList from "../pages/village/VillageList";
 import FamilyList from "../pages/family/FamilyList";
+import FamilyDetailPage from "../pages/family/FamilyDetailPage";
 import MemberList from "../pages/member/MemberList";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
@@ -69,6 +70,11 @@ function AppRoutes() {
                         <Route
                             path="families"
                             element={<FamilyList />}
+                        />
+
+                        <Route
+                            path="families/:familyId"
+                            element={<FamilyDetailPage />}
                         />
 
                         <Route

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { canCreate, canEdit, canDelete } from "../../utils/roleUtils";
+import { canCreate, canEdit, canDelete, canExport } from "../../utils/roleUtils";
 import PageHeader from "../../components/common/PageHeader";
 import CommonTable from "../../components/common/CommonTable";
 import CommonModal from "../../components/common/CommonModal";
@@ -9,17 +10,22 @@ import ActionButtons from "../../components/common/ActionButtons";
 import StatusBadge from "../../components/common/StatusBadge";
 import SearchBox from "../../components/common/SearchBox";
 import Pagination from "../../components/common/Pagination";
+import ExcelToolbar from "../../components/common/ExcelToolbar";
 
 import FamilyForm from "./FamilyForm";
 
 import {
     getFamilies,
     searchFamilies,
-    deleteFamily
+    deleteFamily,
+    exportFamilyMembers,
+    getFamilyById
 } from "../../services/familyService";
 
 function FamilyList() {
 
+    const navigate = useNavigate();
+ 
     const [families, setFamilies] = useState([]);
 
     const [loading, setLoading] = useState(false);
@@ -31,6 +37,11 @@ function FamilyList() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const [deleteId, setDeleteId] = useState(null);
+
+    const [selectedFamilyIds, setSelectedFamilyIds] = useState([]);
+
+    const [viewedFamily, setViewedFamily] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
 
     // ================================
     // Search
@@ -192,6 +203,72 @@ function FamilyList() {
 
 
     // ================================
+    // Export Family Members
+    // ================================
+
+    const handleToggleFamilySelection = (familyId) => {
+
+        setSelectedFamilyIds((currentSelected) => {
+            if (currentSelected.includes(familyId)) {
+                return currentSelected.filter((id) => id !== familyId);
+            }
+
+            return [familyId];
+        });
+
+    };
+
+    const handleSelectAllVisibleFamilies = () => {
+
+        const allVisibleSelected =
+            families.length > 0 &&
+            families.every((family) => selectedFamilyIds.includes(family.id));
+
+        if (allVisibleSelected) {
+            setSelectedFamilyIds([]);
+            return;
+        }
+
+        setSelectedFamilyIds(families.map((family) => family.id));
+
+    };
+
+    const handleExportFamilyMembers = async () => {
+
+        if (selectedFamilyIds.length === 0) {
+            toast.info("Please select a family to export members.");
+            return;
+        }
+
+        const familyId = selectedFamilyIds[0];
+
+        try {
+            const response = await exportFamilyMembers(familyId);
+
+            const url = window.URL.createObjectURL(
+                new Blob([response.data])
+            );
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Family_${familyId}_Members.xlsx`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to export family members.");
+        }
+
+    };
+
+    const handleViewFamily = (family) => {
+        navigate(`/families/${family.id}`);
+    };
+
+    // ================================
     // Delete
     // ================================
 
@@ -248,6 +325,13 @@ function FamilyList() {
                 Search
             ================================= */}
 
+            <ExcelToolbar
+                onExport={handleExportFamilyMembers}
+                showUpload={false}
+                showDownloadTemplate={false}
+                showExport={canExport()}
+            />
+
             <SearchBox
 
                 value={searchKeyword}
@@ -271,9 +355,18 @@ function FamilyList() {
 
                 loading={loading}
 
+                selectable={true}
+
+                selectedRows={selectedFamilyIds}
+
+                onRowSelect={handleToggleFamilySelection}
+
+                onSelectAll={handleSelectAllVisibleFamilies}
+
                 renderActions={(family) => (
 
                     <ActionButtons
+                        onView={() => handleViewFamily(family)}
                         onEdit={
                             canEdit()
                                 ? () => {
@@ -361,6 +454,30 @@ function FamilyList() {
 
                 />
 
+            </CommonModal>
+
+            <CommonModal
+                show={showViewModal}
+                title="Family Details"
+                onClose={() => {
+                    setShowViewModal(false);
+                    setViewedFamily(null);
+                }}
+            >
+                {viewedFamily && (
+                    <div className="row g-3">
+                        <div className="col-md-6"><strong>ID:</strong> {viewedFamily.id}</div>
+                        <div className="col-md-6"><strong>Family Code:</strong> {viewedFamily.familyCode}</div>
+                        <div className="col-md-6"><strong>Family Head:</strong> {viewedFamily.familyHeadName}</div>
+                        <div className="col-md-6"><strong>Mobile:</strong> {viewedFamily.mobileNo}</div>
+                        <div className="col-md-6"><strong>State:</strong> {viewedFamily.stateName}</div>
+                        <div className="col-md-6"><strong>District:</strong> {viewedFamily.districtName}</div>
+                        <div className="col-md-6"><strong>Village:</strong> {viewedFamily.villageName}</div>
+                        <div className="col-md-6"><strong>Ration Card:</strong> {viewedFamily.rationCardNo}</div>
+                        <div className="col-12"><strong>Address:</strong> {viewedFamily.address}</div>
+                        <div className="col-md-6"><strong>Status:</strong> {viewedFamily.active ? "Active" : "Inactive"}</div>
+                    </div>
+                )}
             </CommonModal>
 
 

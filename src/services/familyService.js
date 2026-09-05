@@ -73,3 +73,12 @@ export const updateFamily = (id, family) =>
 // ================================
 export const deleteFamily = (id) =>
     api.delete(`/families/${id}`);
+
+
+// ================================
+// Export Family Members
+// ================================
+export const exportFamilyMembers = (familyId) =>
+    api.get(`/families/${familyId}/members/export`, {
+        responseType: "blob"
+    });

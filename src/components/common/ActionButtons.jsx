@@ -1,4 +1,5 @@
 function ActionButtons({
+    onView,
     onEdit,
     onDelete,
     onStatus,
@@ -7,6 +8,17 @@ function ActionButtons({
 
     return (
         <div className="d-flex gap-2">
+
+            {onView && (
+                <button
+                    type="button"
+                    className="btn btn-info btn-sm"
+                    onClick={onView}
+                    title="View"
+                >
+                    <i className="bi bi-eye"></i>
+                </button>
+            )}
 
             {onEdit && (
                 <button

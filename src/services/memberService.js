@@ -52,6 +52,9 @@ export const searchMembers = ({
 export const getMemberById = (id) =>
     api.get(`/members/${id}`);
 
+export const getMembersByFamilyId = (familyId) =>
+    api.get(`/members/family/${familyId}`);
+
 
 // ================================
 // Create Member
@@ -108,7 +111,12 @@ export const downloadTemplate = () =>
 // ================================
 // Export Members
 // ================================
-export const exportMembers = () =>
-    api.get("/members/export", {
+export const exportMembers = (memberIds = []) => {
+
+    return api.post("/members/export", {
+        memberIds
+    }, {
         responseType: "blob"
     });
+
+};

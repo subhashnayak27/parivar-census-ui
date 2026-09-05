@@ -19,7 +19,8 @@ import {
     deleteMember,
     uploadMembers,
     downloadTemplate,
-    exportMembers
+    exportMembers,
+    getMemberById
 } from "../../services/memberService";
 
 function MemberList() {
@@ -35,6 +36,11 @@ function MemberList() {
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const [deleteId, setDeleteId] = useState(null);
+
+    const [selectedMemberIds, setSelectedMemberIds] = useState([]);
+
+    const [viewedMember, setViewedMember] = useState(null);
+    const [showViewModal, setShowViewModal] = useState(false);
 
     // ================================
     // Search
@@ -260,11 +266,57 @@ function MemberList() {
     // Export Members
     // ================================
 
+    const handleToggleMemberSelection = (memberId) => {
+
+        setSelectedMemberIds((currentSelected) => {
+
+            if (currentSelected.includes(memberId)) {
+                return currentSelected.filter((id) => id !== memberId);
+            }
+
+            return [...currentSelected, memberId];
+        });
+
+    };
+
+    const handleSelectAllVisibleMembers = () => {
+
+        const allVisibleSelected =
+            members.length > 0 &&
+            members.every((member) => selectedMemberIds.includes(member.id));
+
+        if (allVisibleSelected) {
+            setSelectedMemberIds((currentSelected) =>
+                currentSelected.filter(
+                    (id) => !members.some((member) => member.id === id)
+                )
+            );
+            return;
+        }
+
+        setSelectedMemberIds((currentSelected) => {
+            const nextSelected = new Set(currentSelected);
+
+            members.forEach((member) => nextSelected.add(member.id));
+
+            return [...nextSelected];
+        });
+
+    };
+
     const handleExport = async () => {
 
         try {
 
-            const response = await exportMembers();
+            const payload = selectedMemberIds.length > 0
+                ? { memberIds: selectedMemberIds }
+                : {};
+
+            if (selectedMemberIds.length === 0) {
+                toast.info("No rows selected. Exporting all members.");
+            }
+
+            const response = await exportMembers(payload.memberIds || []);
 
             const url = window.URL.createObjectURL(
                 new Blob([response.data])
@@ -294,6 +346,17 @@ function MemberList() {
 
         }
 
+    };
+
+    const handleViewMember = async (member) => {
+        try {
+            const response = await getMemberById(member.id);
+            setViewedMember(response.data.data);
+            setShowViewModal(true);
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load member details.");
+        }
     };
 
 
@@ -429,9 +492,18 @@ function MemberList() {
 
                 loading={loading}
 
+                selectable={true}
+
+                selectedRows={selectedMemberIds}
+
+                onRowSelect={handleToggleMemberSelection}
+
+                onSelectAll={handleSelectAllVisibleMembers}
+
                 renderActions={(member) => (
 
                     <ActionButtons
+                        onView={() => handleViewMember(member)}
 
                         onEdit={
                             canEdit()
@@ -521,6 +593,40 @@ function MemberList() {
 
                 />
 
+            </CommonModal>
+
+            <CommonModal
+                show={showViewModal}
+                title="Member Details"
+                onClose={() => {
+                    setShowViewModal(false);
+                    setViewedMember(null);
+                }}
+            >
+                {viewedMember && (
+                    <div className="row g-3">
+                        <div className="col-md-6"><strong>ID:</strong> {viewedMember.id}</div>
+                        <div className="col-md-6"><strong>Member Code:</strong> {viewedMember.memberCode}</div>
+                        <div className="col-md-6"><strong>First Name:</strong> {viewedMember.firstName}</div>
+                        <div className="col-md-6"><strong>Last Name:</strong> {viewedMember.lastName}</div>
+                        <div className="col-md-6"><strong>Gender:</strong> {viewedMember.gender}</div>
+                        <div className="col-md-6"><strong>Relationship:</strong> {viewedMember.relationship}</div>
+                        <div className="col-md-6"><strong>Marital Status:</strong> {viewedMember.maritalStatus}</div>
+                        <div className="col-md-6"><strong>Date of Birth:</strong> {viewedMember.dateOfBirth}</div>
+                        <div className="col-md-6"><strong>Mobile:</strong> {viewedMember.mobileNo}</div>
+                        <div className="col-md-6"><strong>Aadhaar:</strong> {viewedMember.aadhaarNo}</div>
+                        <div className="col-md-6"><strong>Occupation:</strong> {viewedMember.occupation}</div>
+                        <div className="col-md-6"><strong>Education:</strong> {viewedMember.education}</div>
+                        <div className="col-md-6"><strong>Gotra:</strong> {viewedMember.gotra}</div>
+                        <div className="col-md-6"><strong>Pata:</strong> {viewedMember.pata}</div>
+                        <div className="col-md-6"><strong>Kuldevi:</strong> {viewedMember.kuldevi}</div>
+                        <div className="col-md-6"><strong>Family:</strong> {viewedMember.familyHeadName} ({viewedMember.familyCode})</div>
+                        <div className="col-md-6"><strong>Village:</strong> {viewedMember.villageName}</div>
+                        <div className="col-md-6"><strong>District:</strong> {viewedMember.districtName}</div>
+                        <div className="col-md-6"><strong>State:</strong> {viewedMember.stateName}</div>
+                        <div className="col-md-6"><strong>Status:</strong> {viewedMember.active ? "Active" : "Inactive"}</div>
+                    </div>
+                )}
             </CommonModal>
 
 

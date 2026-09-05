@@ -6,7 +6,12 @@ function CommonTable({
     columns,
     data,
     renderActions,
-    loading = false
+    loading = false,
+    selectable = false,
+    selectedRows = [],
+    onRowSelect = () => {},
+    onSelectAll = () => {},
+    rowKey = "id"
 
 }) {
 
@@ -22,6 +27,11 @@ function CommonTable({
 
     }
 
+    const allVisibleSelected =
+        selectable &&
+        data.length > 0 &&
+        data.every(row => selectedRows.includes(row[rowKey]));
+
     return (
 
         <table className="table table-bordered table-hover shadow">
@@ -29,6 +39,18 @@ function CommonTable({
             <thead className="table-dark">
 
                 <tr>
+
+                    {selectable && (
+                        <th style={{ width: "40px" }}>
+                            <input
+                                type="checkbox"
+                                className="form-check-input"
+                                checked={allVisibleSelected}
+                                onChange={onSelectAll}
+                                aria-label="Select all rows"
+                            />
+                        </th>
+                    )}
 
                     {columns.map(column => (
 
@@ -50,53 +72,70 @@ function CommonTable({
 
                 {
 
-                    data.map(row => (
+                    data.map(row => {
 
-                        <tr key={row.id}>
+                        const rowId = row[rowKey];
+                        const isSelected = selectable && selectedRows.includes(rowId);
 
-                            {
+                        return (
+                            <tr key={rowId}>
 
-                                columns.map(column => (
-
-                                    <td key={column.field}>
-
-                                        {
-
-                                            column.render
-
-                                                ? column.render(row)
-
-                                                : row[column.field]
-
-                                        }
-
+                                {selectable && (
+                                    <td className="text-center">
+                                        <input
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            checked={isSelected}
+                                            onChange={() => onRowSelect(rowId)}
+                                            aria-label={`Select row ${rowId}`}
+                                        />
                                     </td>
+                                )}
 
-                                ))
+                                {
 
-                            }
+                                    columns.map(column => (
 
-                            {
+                                        <td key={column.field}>
 
-                                renderActions && (
+                                            {
 
-                                    <td>
+                                                column.render
 
-                                        {
+                                                    ? column.render(row)
 
-                                            renderActions(row)
+                                                    : row[column.field]
 
-                                        }
+                                            }
 
-                                    </td>
+                                        </td>
 
-                                )
+                                    ))
 
-                            }
+                                }
 
-                        </tr>
+                                {
 
-                    ))
+                                    renderActions && (
+
+                                        <td>
+
+                                            {
+
+                                                renderActions(row)
+
+                                            }
+
+                                        </td>
+
+                                    )
+
+                                }
+
+                            </tr>
+                        );
+
+                    })
 
                 }
 
