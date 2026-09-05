@@ -507,9 +507,15 @@ function MemberList() {
 
                         onEdit={
                             canEdit()
-                                ? () => {
-                                    setSelectedMember(member);
-                                    setShowModal(true);
+                                ? async () => {
+                                    try {
+                                        const response = await getMemberById(member.id);
+                                        setSelectedMember(response.data.data);
+                                        setShowModal(true);
+                                    } catch (error) {
+                                        console.error(error);
+                                        toast.error("Failed to load member for edit");
+                                    }
                                 }
                                 : undefined
                         }
