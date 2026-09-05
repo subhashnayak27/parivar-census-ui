@@ -211,7 +211,9 @@ function MemberForm({
             const response =
                 await getDistrictsByState(stateId);
 
-            setDistricts(response.data.data);
+            // Normalize response: some endpoints return paginated { content: [...] }, others return array
+            const districtsData = response.data.data?.content || response.data.data || [];
+            setDistricts(districtsData);
 
         }
 
@@ -230,7 +232,9 @@ function MemberForm({
             const response =
                 await getVillagesByDistrict(districtId);
 
-            setVillages(response.data.data);
+            // Normalize response
+            const villagesData = response.data.data?.content || response.data.data || [];
+            setVillages(villagesData);
 
         }
 
@@ -249,7 +253,9 @@ function MemberForm({
             const response =
                 await getFamiliesByVillage(villageId);
 
-            setFamilies(response.data.data);
+            // Normalize response
+            const familiesData = response.data.data?.content || response.data.data || [];
+            setFamilies(familiesData);
 
         }
 
