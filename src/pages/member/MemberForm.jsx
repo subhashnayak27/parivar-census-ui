@@ -274,6 +274,7 @@ function MemberForm({
             lastName: member.lastName,
             gender: member.gender,
             dateOfBirth: member.dateOfBirth,
+            birthTime: member.birthTime || "",
             gotra: member.gotra || "",
             pata: member.pata || "",
             kuldevi: member.kuldevi || "",
@@ -637,25 +638,38 @@ const onSubmit = async (data) => {
                         {/* Date Of Birth */}
 
                         <div className="row">
-
+ 
                             <div className="col-md-6">
-
+ 
                                 <div className="mb-3">
-
+ 
                                     <label className="form-label">
                                         Date Of Birth
                                     </label>
-
+ 
                                     <input
                                         type="date"
                                         className="form-control"
                                         {...register("dateOfBirth")}
                                     />
-
+ 
                                 </div>
-
+ 
                             </div>
 
+                            <div className="col-md-6">
+                                <div className="mb-3">
+                                    <label className="form-label">
+                                        Birth Time (Optional)
+                                    </label>
+                                    <input
+                                        type="time"
+                                        className="form-control"
+                                        {...register("birthTime")}
+                                    />
+                                </div>
+                            </div>
+ 
                             <div className="col-md-6 d-flex align-items-center">
 
                                 <div className="form-check mt-4">

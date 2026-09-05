@@ -613,6 +613,7 @@ function MemberList() {
                         <div className="col-md-6"><strong>Relationship:</strong> {viewedMember.relationship}</div>
                         <div className="col-md-6"><strong>Marital Status:</strong> {viewedMember.maritalStatus}</div>
                         <div className="col-md-6"><strong>Date of Birth:</strong> {viewedMember.dateOfBirth}</div>
+                        <div className="col-md-6"><strong>Birth Time:</strong> {viewedMember.birthTime || "Not provided"}</div>
                         <div className="col-md-6"><strong>Mobile:</strong> {viewedMember.mobileNo}</div>
                         <div className="col-md-6"><strong>Aadhaar:</strong> {viewedMember.aadhaarNo}</div>
                         <div className="col-md-6"><strong>Occupation:</strong> {viewedMember.occupation}</div>
