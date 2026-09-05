@@ -79,6 +79,40 @@ function Login() {
                 </div>
 
 
+                {/* PUBLIC INFORMATION NAVIGATION */}
+
+                <div className="public-info-nav">
+
+                    <Link to="/about-shringirishi" className="public-info-link">
+                        <i className="bi bi-info-circle"></i>
+                        <span>
+                            {i18n.language === "hi"
+                                ? "शृंगऋषि के बारे में"
+                                : "About Shringirishi"}
+                        </span>
+                    </Link>
+
+                    <Link to="/temple" className="public-info-link">
+                        <i className="bi bi-building"></i>
+                        <span>
+                            {i18n.language === "hi"
+                                ? "मंदिर"
+                                : "Temple"}
+                        </span>
+                    </Link>
+
+                    <Link to="/place-details" className="public-info-link">
+                        <i className="bi bi-geo-alt"></i>
+                        <span>
+                            {i18n.language === "hi"
+                                ? "स्थान विवरण"
+                                : "Place Details"}
+                        </span>
+                    </Link>
+
+                </div>
+
+
                 <div className="login-hero">
 
                     <h1>

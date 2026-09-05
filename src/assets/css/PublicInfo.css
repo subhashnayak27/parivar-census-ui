@@ -1,0 +1,277 @@
+/* =========================================
+   PUBLIC INFORMATION PAGES
+========================================= */
+
+.public-info-page {
+    min-height: 100vh;
+    color: #fff;
+    background:
+        linear-gradient(rgba(4, 20, 45, 0.72), rgba(4, 20, 45, 0.82)),
+        url("../../assets/images/shringirishi-temple.jpg") center / cover fixed no-repeat;
+}
+
+.public-info-header {
+    height: 78px;
+    padding: 0 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.10);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.20);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.public-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.public-brand-icon {
+    font-size: 30px;
+}
+
+.public-login-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,.45);
+    border-radius: 12px;
+    background: rgba(255,255,255,.14);
+    backdrop-filter: blur(10px);
+    transition: .2s ease;
+}
+
+.public-login-btn:hover {
+    color: #fff;
+    background: rgba(255,255,255,.25);
+    transform: translateY(-1px);
+}
+
+.public-info-container {
+    width: min(1180px, 92%);
+    margin: 0 auto;
+    padding: 55px 0 35px;
+}
+
+.public-info-hero {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 45px;
+    align-items: center;
+}
+
+.public-info-copy,
+.public-info-image-card,
+.public-detail-card,
+.public-info-note {
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.25);
+    box-shadow: 0 15px 45px rgba(0,0,0,.20);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.public-info-copy {
+    padding: 42px;
+    border-radius: 28px;
+}
+
+.public-info-icon {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.18);
+    font-size: 28px;
+}
+
+.public-info-copy h1 {
+    margin: 0;
+    font-size: clamp(34px, 5vw, 58px);
+    font-weight: 700;
+    text-shadow: 0 4px 15px rgba(0,0,0,.35);
+}
+
+.public-info-subtitle {
+    margin: 12px 0 20px;
+    font-size: 21px;
+    opacity: .92;
+}
+
+.public-info-body {
+    margin: 0;
+    max-width: 720px;
+    line-height: 1.8;
+    font-size: 17px;
+    opacity: .95;
+}
+
+.public-info-image-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 410px;
+    border-radius: 28px;
+}
+
+.public-info-image-card img {
+    width: 100%;
+    height: 100%;
+    min-height: 410px;
+    display: block;
+    object-fit: cover;
+}
+
+.public-image-caption {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(8px);
+    font-weight: 600;
+}
+
+.public-info-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 25px;
+}
+
+.public-detail-card {
+    padding: 28px;
+    border-radius: 22px;
+}
+
+.public-detail-card > i {
+    font-size: 28px;
+}
+
+.public-detail-card h3 {
+    margin: 14px 0 8px;
+    font-size: 21px;
+}
+
+.public-detail-card p {
+    margin: 0;
+    line-height: 1.6;
+    opacity: .88;
+}
+
+.public-info-note {
+    margin-top: 22px;
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 14px;
+    opacity: .9;
+}
+
+.public-info-footer {
+    padding: 24px 5% 32px;
+    display: flex;
+    justify-content: center;
+    gap: 13px;
+    color: rgba(255,255,255,.8);
+}
+
+.public-info-footer a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.public-info-footer a:hover {
+    text-decoration: underline;
+}
+
+.public-info-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.public-info-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    transition: .2s ease;
+}
+
+.public-info-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,.23);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 850px) {
+    .public-info-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .public-info-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .public-info-image-card,
+    .public-info-image-card img {
+        min-height: 320px;
+    }
+}
+
+@media (max-width: 576px) {
+    .public-info-header {
+        height: auto;
+        min-height: 70px;
+        padding: 12px 5%;
+    }
+
+    .public-brand {
+        font-size: 18px;
+    }
+
+    .public-login-btn {
+        padding: 8px 13px;
+    }
+
+    .public-info-container {
+        padding-top: 25px;
+    }
+
+    .public-info-copy {
+        padding: 28px 22px;
+        border-radius: 20px;
+    }
+
+    .public-info-copy h1 {
+        font-size: 34px;
+    }
+
+    .public-info-subtitle {
+        font-size: 18px;
+    }
+
+    .public-info-link {
+        width: 100%;
+        justify-content: center;
+    }
+}

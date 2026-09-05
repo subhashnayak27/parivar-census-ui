@@ -13,6 +13,7 @@ import FamilyList from "../pages/family/FamilyList";
 import MemberList from "../pages/member/MemberList";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import PublicInfo from "../pages/public/PublicInfo";
 function AppRoutes() {
 
     return (
@@ -25,6 +26,20 @@ function AppRoutes() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password"  element={<ForgotPassword />}/>
                 <Route path="/reset-password"  element={<ResetPassword />}/>
+
+                {/* Public information - no login required */}
+                <Route
+                    path="/about-shringirishi"
+                    element={<PublicInfo type="about" />}
+                />
+                <Route
+                    path="/temple"
+                    element={<PublicInfo type="temple" />}
+                />
+                <Route
+                    path="/place-details"
+                    element={<PublicInfo type="place" />}
+                />
                 {/* Protected */}
                 <Route element={<ProtectedRoute />}>
 
