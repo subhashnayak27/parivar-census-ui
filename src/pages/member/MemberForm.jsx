@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 import {
@@ -11,11 +11,6 @@ import { getStates } from "../../services/stateService";
 import { getDistrictsByState } from "../../services/districtService";
 import { getVillagesByDistrict } from "../../services/villageService";
 import { getFamiliesByVillage } from "../../services/familyService";
-
-
-/* =========================================================
-   Gotra Master
-========================================================= */
 
 const gotras = [
     {
@@ -88,60 +83,61 @@ const gotras = [
     }
 ];
 
+const EMPTY_FORM = {
+    stateId: "",
+    districtId: "",
+    villageId: "",
+    familyId: "",
 
-/* =========================================================
-   Component
-========================================================= */
+    firstName: "",
+    lastName: "",
 
-function MemberForm({
-    member,
-    onSuccess,
-    onClose
-}) {
+    gender: "",
+    dateOfBirth: "",
+    birthTime: "",
 
+    alive: true,
+    dateOfDeath: "",
+
+    relationship: "",
+    maritalStatus: "",
+
+    mobileNo: "",
+    aadhaarNo: "",
+
+    occupation: "",
+    education: "",
+
+    gotra: "",
+    pata: "",
+    kuldevi: ""
+};
+
+const toId = (value) =>
+    value === null || value === undefined || value === ""
+        ? ""
+        : String(value);
+
+const normalizeLookupList = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.content)) return payload.content;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload?.data?.content)) return payload.data.content;
+    return [];
+};
+
+function MemberForm({ member, onSuccess, onClose }) {
     const {
         register,
+        control,
         handleSubmit,
         reset,
         setValue,
         watch,
-        formState: { errors }
+        formState: { errors, isSubmitting }
     } = useForm({
-
-        defaultValues: {
-            stateId: "",
-            districtId: "",
-            villageId: "",
-            familyId: "",
-
-            firstName: "",
-            lastName: "",
-
-            gender: "",
-            dateOfBirth: "",
-
-            alive: true,
-            dateOfDeath: "",
-
-            relationship: "",
-            maritalStatus: "",
-
-            mobileNo: "",
-            aadhaarNo: "",
-
-            occupation: "",
-            education: "",
-
-            gotra: "",
-            pata: "",
-            kuldevi: ""
-        }
+        defaultValues: EMPTY_FORM
     });
-
-
-    /* =====================================================
-       Dropdown State
-    ===================================================== */
 
     const [states, setStates] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -159,674 +155,381 @@ function MemberForm({
     const selectedGotra = watch("gotra");
     const alive = watch("alive");
 
-
-    /* =====================================================
-       Load States
-    ===================================================== */
-
+    /* =========================================================
+       Load states once
+    ========================================================= */
     useEffect(() => {
+        let active = true;
 
-        loadStates();
+        const load = async () => {
+            try {
+                setLoadingStates(true);
 
+                const response = await getStates({
+                    page: 0,
+                    size: 1000,
+                    sortBy: "id",
+                    direction: "asc"
+                });
+
+                if (!active) return;
+
+                const stateList = normalizeLookupList(response?.data?.data);
+
+                console.log("States API response:", response?.data);
+                console.log("States loaded:", stateList);
+
+                setStates(stateList);
+            } catch (error) {
+                if (!active) return;
+
+                console.error("Failed to load states", error);
+                toast.error("Failed to load states");
+                setStates([]);
+            } finally {
+                if (active) {
+                    setLoadingStates(false);
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            active = false;
+        };
     }, []);
 
-
-    const loadStates = async () => {
-
-        try {
-
-            setLoadingStates(true);
-
-            const response = await getStates({
-                page: 0,
-                size: 1000,
-                sortBy: "id",
-                direction: "asc"
-            });
-
-            const data = response?.data?.data;
-
-            /*
-             * Your API returns paginated state data:
-             *
-             * {
-             *    data: {
-             *       content: [...]
-             *    }
-             * }
-             */
-
-            const stateList = Array.isArray(data)
-                ? data
-                : data?.content || [];
-
-            setStates(stateList);
-
-        } catch (error) {
-
-            console.error("Failed to load states", error);
-
-            toast.error("Failed to load states");
-
-        } finally {
-
-            setLoadingStates(false);
-
-        }
-    };
-
-
-    /* =====================================================
-       Load Districts
-    ===================================================== */
-
-    const loadDistricts = async (stateId) => {
-
-        if (!stateId) {
-
-            setDistricts([]);
-            return [];
-
-        }
-
-        try {
-
-            setLoadingDistricts(true);
-
-            const response =
-                await getDistrictsByState(stateId);
-
-            const districtList =
-                response?.data?.data || [];
-
-            setDistricts(districtList);
-
-            return districtList;
-
-        } catch (error) {
-
-            console.error(
-                "Failed to load districts",
-                error
-            );
-
-            toast.error("Failed to load districts");
-
-            setDistricts([]);
-
-            return [];
-
-        } finally {
-
-            setLoadingDistricts(false);
-
-        }
-    };
-
-
-    /* =====================================================
-       Load Villages
-    ===================================================== */
-
-    const loadVillages = async (districtId) => {
-
-        if (!districtId) {
-
-            setVillages([]);
-            return [];
-
-        }
-
-        try {
-
-            setLoadingVillages(true);
-
-            const response =
-                await getVillagesByDistrict(districtId);
-
-            const villageList =
-                response?.data?.data || [];
-
-            setVillages(villageList);
-
-            return villageList;
-
-        } catch (error) {
-
-            console.error(
-                "Failed to load villages",
-                error
-            );
-
-            toast.error("Failed to load villages");
-
-            setVillages([]);
-
-            return [];
-
-        } finally {
-
-            setLoadingVillages(false);
-
-        }
-    };
-
-
-    /* =====================================================
-       Load Families
-    ===================================================== */
-
-    const loadFamilies = async (villageId) => {
-
-        if (!villageId) {
-
-            setFamilies([]);
-            return [];
-
-        }
-
-        try {
-
-            setLoadingFamilies(true);
-
-            const response =
-                await getFamiliesByVillage(villageId);
-
-            const familyList =
-                response?.data?.data || [];
-
-            setFamilies(familyList);
-
-            return familyList;
-
-        } catch (error) {
-
-            console.error(
-                "Failed to load families",
-                error
-            );
-
-            toast.error("Failed to load families");
-
-            setFamilies([]);
-
-            return [];
-
-        } finally {
-
-            setLoadingFamilies(false);
-
-        }
-    };
-
-
-    /* =====================================================
-       Normal User Selection - State
-    ===================================================== */
-
-    const handleStateChange = async (event) => {
-
-        const stateId = event.target.value;
-
-        setValue("stateId", stateId);
-
-        /*
-         * Clear dependent dropdowns.
-         */
-
-        setValue("districtId", "");
-        setValue("villageId", "");
-        setValue("familyId", "");
-
-        setDistricts([]);
-        setVillages([]);
-        setFamilies([]);
-
-        if (!stateId) {
-            return;
-        }
-
-        await loadDistricts(stateId);
-    };
-
-
-    /* =====================================================
-       Normal User Selection - District
-    ===================================================== */
-
-    const handleDistrictChange = async (event) => {
-
-        const districtId = event.target.value;
-
-        setValue("districtId", districtId);
-
-        /*
-         * Clear dependent dropdowns.
-         */
-
-        setValue("villageId", "");
-        setValue("familyId", "");
-
-        setVillages([]);
-        setFamilies([]);
-
-        if (!districtId) {
-            return;
-        }
-
-        await loadVillages(districtId);
-    };
-
-
-    /* =====================================================
-       Normal User Selection - Village
-    ===================================================== */
-
-    const handleVillageChange = async (event) => {
-
-        const villageId = event.target.value;
-
-        setValue("villageId", villageId);
-
-        /*
-         * Clear family when village changes.
-         */
-
-        setValue("familyId", "");
-
-        setFamilies([]);
-
-        if (!villageId) {
-            return;
-        }
-
-        await loadFamilies(villageId);
-    };
-
-
-    /* =====================================================
-       Gotra Change
-    ===================================================== */
-
-    const handleGotraChange = (event) => {
-
-        const gotraName = event.target.value;
-
-        setValue("gotra", gotraName);
-
-        const gotraObj =
-            gotras.find(
-                item => item.gotraName === gotraName
-            );
-
-        setValue(
-            "pata",
-            gotraObj ? gotraObj.pata : ""
-        );
-    };
-
-
-    /* =====================================================
-       EDIT MEMBER
+    /* =========================================================
+       Load/edit form data
 
        Important:
-       We do NOT depend on the cascading useEffects here.
+       We reset ALL IDs together. The three cascading effects
+       below then load their own options based on those IDs.
 
-       We load everything in correct sequence:
-
-       State
-          ↓
-       District
-          ↓
-       Village
-          ↓
-       Family
-
-       Then populate the form.
-    ===================================================== */
-
+       There is no manual "load edit data" sequence and no
+       districtExists/villageExists/familyExists gate.
+    ========================================================= */
     useEffect(() => {
-
         if (!member) {
-
-            reset({
-
-                stateId: "",
-                districtId: "",
-                villageId: "",
-                familyId: "",
-
-                firstName: "",
-                lastName: "",
-
-                gender: "",
-                dateOfBirth: "",
-
-                alive: true,
-                dateOfDeath: "",
-
-                relationship: "",
-                maritalStatus: "",
-
-                mobileNo: "",
-                aadhaarNo: "",
-
-                occupation: "",
-                education: "",
-
-                gotra: "",
-                pata: "",
-                kuldevi: ""
-            });
-
+            reset(EMPTY_FORM);
             setDistricts([]);
             setVillages([]);
             setFamilies([]);
-
             return;
         }
 
+        const editValues = {
+            stateId: toId(member.stateId),
+            districtId: toId(member.districtId),
+            villageId: toId(member.villageId),
+            familyId: toId(member.familyId),
 
-        /*
-         * Wait until states are loaded.
-         */
+            firstName: member.firstName ?? "",
+            lastName: member.lastName ?? "",
 
-        if (states.length === 0) {
-            return;
+            gender: member.gender ?? "",
+            dateOfBirth: member.dateOfBirth ?? "",
+            birthTime: member.birthTime ?? "",
+
+            alive: member.alive !== undefined
+                ? Boolean(member.alive)
+                : true,
+            dateOfDeath: member.dateOfDeath ?? "",
+
+            relationship: member.relationship ?? "",
+            maritalStatus: member.maritalStatus ?? "",
+
+            mobileNo: member.mobileNo ?? "",
+            aadhaarNo: member.aadhaarNo ?? "",
+
+            occupation: member.occupation ?? "",
+            education: member.education ?? "",
+
+            gotra: member.gotra ?? "",
+            pata: member.pata ?? "",
+            kuldevi: member.kuldevi ?? ""
+        };
+
+        console.log("Member edit values:", editValues);
+        reset(editValues);
+    }, [member, reset]);
+
+    /* =========================================================
+       State -> Districts
+
+       This effect handles BOTH:
+       - user changing State
+       - edit mode restoring an existing State
+    ========================================================= */
+    useEffect(() => {
+        let active = true;
+
+        setDistricts([]);
+
+        if (!selectedStateId) {
+            setLoadingDistricts(false);
+            return () => {
+                active = false;
+            };
         }
 
+        const load = async () => {
+            try {
+                setLoadingDistricts(true);
 
-        loadEditData();
+                const response = await getDistrictsByState(
+                    selectedStateId
+                );
 
-    }, [member, states]);
+                if (!active) return;
 
+                const list = normalizeLookupList(response?.data?.data);
+                console.log("Districts loaded for state", selectedStateId, list);
+                setDistricts(list);
+            } catch (error) {
+                if (!active) return;
 
-    const loadEditData = async () => {
+                console.error("Failed to load districts", error);
+                toast.error("Failed to load districts");
+                setDistricts([]);
+            } finally {
+                if (active) {
+                    setLoadingDistricts(false);
+                }
+            }
+        };
 
-        try {
+        load();
 
-            console.log(
-                "Loading member for edit:",
-                member
-            );
+        return () => {
+            active = false;
+        };
+    }, [selectedStateId]);
 
+    /* =========================================================
+       District -> Villages
+    ========================================================= */
+    useEffect(() => {
+        let active = true;
 
-            /* =========================================
-               Extract IDs safely
-            ========================================= */
+        setVillages([]);
 
-            const stateId =
-                member?.stateId != null
-                    ? String(member.stateId)
-                    : "";
+        if (!selectedDistrictId) {
+            setLoadingVillages(false);
+            return () => {
+                active = false;
+            };
+        }
 
-            const districtId =
-                member?.districtId != null
-                    ? String(member.districtId)
-                    : "";
+        const load = async () => {
+            try {
+                setLoadingVillages(true);
 
-            const villageId =
-                member?.villageId != null
-                    ? String(member.villageId)
-                    : "";
+                const response = await getVillagesByDistrict(
+                    selectedDistrictId
+                );
 
-            const familyId =
-                member?.familyId != null
-                    ? String(member.familyId)
-                    : "";
+                if (!active) return;
 
+                const list = normalizeLookupList(response?.data?.data);
+                console.log("Villages loaded for district", selectedDistrictId, list);
+                setVillages(list);
+            } catch (error) {
+                if (!active) return;
 
-            console.log("Edit hierarchy:", {
-                stateId,
-                districtId,
-                villageId,
-                familyId
+                console.error("Failed to load villages", error);
+                toast.error("Failed to load villages");
+                setVillages([]);
+            } finally {
+                if (active) {
+                    setLoadingVillages(false);
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            active = false;
+        };
+    }, [selectedDistrictId]);
+
+    /* =========================================================
+       Village -> Families
+    ========================================================= */
+    useEffect(() => {
+        let active = true;
+
+        setFamilies([]);
+
+        if (!selectedVillageId) {
+            setLoadingFamilies(false);
+            return () => {
+                active = false;
+            };
+        }
+
+        const load = async () => {
+            try {
+                setLoadingFamilies(true);
+
+                const response = await getFamiliesByVillage(
+                    selectedVillageId
+                );
+
+                if (!active) return;
+
+                const list = normalizeLookupList(response?.data?.data);
+                console.log("Families loaded for village", selectedVillageId, list);
+                setFamilies(list);
+            } catch (error) {
+                if (!active) return;
+
+                console.error("Failed to load families", error);
+                toast.error("Failed to load families");
+                setFamilies([]);
+            } finally {
+                if (active) {
+                    setLoadingFamilies(false);
+                }
+            }
+        };
+
+        load();
+
+        return () => {
+            active = false;
+        };
+    }, [selectedVillageId]);
+
+    /* =========================================================
+       User selection handlers
+
+       Only update the form and clear descendants.
+       The effects above perform the API calls.
+    ========================================================= */
+    const handleStateChange = (stateId) => {
+
+        setValue("stateId", stateId, {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+
+        setValue("districtId", "", {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+        setValue("villageId", "", {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+        setValue("familyId", "", {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+
+        setVillages([]);
+        setFamilies([]);
+    };
+
+    const handleDistrictChange = (districtId) => {
+
+        setValue("districtId", districtId, {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+
+        setValue("villageId", "", {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+        setValue("familyId", "", {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+
+        setFamilies([]);
+    };
+
+    const handleVillageChange = (villageId) => {
+
+        setValue("villageId", villageId, {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+
+        setValue("familyId", "", {
+            shouldValidate: true,
+            shouldDirty: true
+        });
+    };
+
+    const handleGotraChange = (gotraName) => {
+        const gotra = gotras.find(
+            item => item.gotraName === gotraName
+        );
+
+        setValue("gotra", gotraName, {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+
+        setValue("pata", gotra?.pata ?? "", {
+            shouldDirty: true
+        });
+    };
+
+    const handleAliveChange = (isAlive) => {
+
+        setValue("alive", isAlive, {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+
+        if (isAlive) {
+            setValue("dateOfDeath", "", {
+                shouldDirty: true,
+                shouldValidate: true
             });
-
-
-            /* =========================================
-               STEP 1
-               Set basic member information
-            ========================================= */
-
-            reset({
-
-                stateId,
-
-                districtId: "",
-                villageId: "",
-                familyId: "",
-
-                firstName: member.firstName || "",
-                lastName: member.lastName || "",
-
-                gender: member.gender || "",
-
-                dateOfBirth:
-                    member.dateOfBirth || "",
-
-                alive:
-                    member.alive !== undefined
-                        ? member.alive
-                        : true,
-
-                dateOfDeath:
-                    member.dateOfDeath || "",
-
-                relationship:
-                    member.relationship || "",
-
-                maritalStatus:
-                    member.maritalStatus || "",
-
-                mobileNo:
-                    member.mobileNo || "",
-
-                aadhaarNo:
-                    member.aadhaarNo || "",
-
-                occupation:
-                    member.occupation || "",
-
-                education:
-                    member.education || "",
-
-                gotra:
-                    member.gotra || "",
-
-                pata:
-                    member.pata || "",
-
-                kuldevi:
-                    member.kuldevi || ""
-            });
-
-
-            /* =========================================
-               STEP 2
-               Load Districts
-            ========================================= */
-
-            if (stateId) {
-
-                const districtList =
-                    await loadDistricts(stateId);
-
-                /*
-                 * Only set district if it exists
-                 * in returned list.
-                 */
-
-                const districtExists =
-                    districtList.some(
-                        item =>
-                            String(item.id) === districtId
-                    );
-
-                if (districtExists) {
-
-                    setValue(
-                        "districtId",
-                        districtId
-                    );
-
-                } else {
-
-                    console.warn(
-                        "District not found:",
-                        districtId
-                    );
-                }
-            }
-
-
-            /* =========================================
-               STEP 3
-               Load Villages
-            ========================================= */
-
-            if (districtId) {
-
-                const villageList =
-                    await loadVillages(districtId);
-
-                const villageExists =
-                    villageList.some(
-                        item =>
-                            String(item.id) === villageId
-                    );
-
-                if (villageExists) {
-
-                    setValue(
-                        "villageId",
-                        villageId
-                    );
-
-                } else {
-
-                    console.warn(
-                        "Village not found:",
-                        villageId
-                    );
-                }
-            }
-
-
-            /* =========================================
-               STEP 4
-               Load Families
-            ========================================= */
-
-            if (villageId) {
-
-                const familyList =
-                    await loadFamilies(villageId);
-
-                const familyExists =
-                    familyList.some(
-                        item =>
-                            String(item.id) === familyId
-                    );
-
-                if (familyExists) {
-
-                    setValue(
-                        "familyId",
-                        familyId
-                    );
-
-                } else {
-
-                    console.warn(
-                        "Family not found:",
-                        familyId
-                    );
-                }
-            }
-
-
-            console.log(
-                "Member edit data loaded successfully"
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Failed to load member edit data",
-                error
-            );
-
-            toast.error(
-                "Failed to load member details"
-            );
         }
     };
 
-
-    /* =====================================================
+    /* =========================================================
        Submit
-    ===================================================== */
-
-    const onSubmit = async (data) => {
+    ========================================================= */
+    const onSubmit = async (formData) => {
+        const data = {
+            ...formData,
+            stateId: toId(formData.stateId),
+            districtId: toId(formData.districtId),
+            villageId: toId(formData.villageId),
+            familyId: toId(formData.familyId),
+            alive: Boolean(formData.alive),
+            dateOfDeath: formData.alive
+                ? null
+                : formData.dateOfDeath || null
+        };
 
         try {
-
-            /*
-             * Ensure boolean value for alive.
-             */
-
-            data.alive =
-                data.alive === true ||
-                data.alive === "true";
-
-
-            /*
-             * If member is alive, remove date of death.
-             */
-
-            if (data.alive) {
-
-                data.dateOfDeath = null;
-
-            }
-
-
             console.log(
-                "Submitting member:",
+                member
+                    ? "Updating member:"
+                    : "Creating member:",
                 data
             );
 
-
             if (member) {
-
-                await updateMember(
-                    member.id,
-                    data
-                );
-
-                toast.success(
-                    "Member updated successfully"
-                );
-
+                await updateMember(member.id, data);
+                toast.success("Member updated successfully");
             } else {
-
                 await createMember(data);
-
-                toast.success(
-                    "Member created successfully"
-                );
+                toast.success("Member created successfully");
             }
 
-
             onSuccess();
-
         } catch (error) {
-
-            console.error(
-                "Member save failed",
-                error
-            );
+            console.error("Member save failed", error);
 
             toast.error(
                 error?.response?.data?.message ||
@@ -839,222 +542,124 @@ function MemberForm({
         }
     };
 
-
-    /* =====================================================
-       Render
-    ===================================================== */
-
     return (
-
         <form onSubmit={handleSubmit(onSubmit)}>
-
-
-            {/* =================================================
-                State
-            ================================================= */}
-
+            {/* State */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    State
-                </label>
-
-                <select
-                    className="form-select"
-                    {...register("stateId", {
-                        required: "State is required"
-                    })}
-                    onChange={handleStateChange}
-                >
-
-                    <option value="">
-                        Select State
-                    </option>
-
-                    {states.map(state => (
-
-                        <option
-                            key={state.id}
-                            value={state.id}
+                <label className="form-label">State</label>
+                <Controller
+                    name="stateId"
+                    control={control}
+                    rules={{ required: "State is required" }}
+                    render={({ field }) => (
+                        <select
+                            className="form-select"
+                            value={field.value || ""}
+                            onChange={(e) => handleStateChange(e.target.value)}
+                            disabled={loadingStates}
                         >
-                            {state.stateName}
-                        </option>
-
-                    ))}
-
-                </select>
-
-                {loadingStates && (
-                    <small className="text-muted">
-                        Loading states...
-                    </small>
-                )}
-
-                <small className="text-danger">
-                    {errors.stateId?.message}
-                </small>
-
+                            <option value="">
+                                {loadingStates ? "Loading States..." : "Select State"}
+                            </option>
+                            {states.map((state) => (
+                                <option key={state.id} value={String(state.id)}>
+                                    {state.stateName}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                />
+                <small className="text-danger">{errors.stateId?.message}</small>
             </div>
 
-
-            {/* =================================================
-                District
-            ================================================= */}
-
+            {/* District */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    District
-                </label>
-
-                <select
-                    className="form-select"
-                    {...register("districtId", {
-                        required: "District is required"
-                    })}
-                    onChange={handleDistrictChange}
-                    disabled={
-                        !selectedStateId ||
-                        loadingDistricts
-                    }
-                >
-
-                    <option value="">
-                        {loadingDistricts
-                            ? "Loading Districts..."
-                            : "Select District"
-                        }
-                    </option>
-
-                    {districts.map(district => (
-
-                        <option
-                            key={district.id}
-                            value={district.id}
+                <label className="form-label">District</label>
+                <Controller
+                    name="districtId"
+                    control={control}
+                    rules={{ required: "District is required" }}
+                    render={({ field }) => (
+                        <select
+                            className="form-select"
+                            value={field.value || ""}
+                            onChange={(e) => handleDistrictChange(e.target.value)}
+                            disabled={!selectedStateId || loadingDistricts}
                         >
-                            {district.districtName}
-                        </option>
-
-                    ))}
-
-                </select>
-
-                <small className="text-danger">
-                    {errors.districtId?.message}
-                </small>
-
+                            <option value="">
+                                {loadingDistricts ? "Loading Districts..." : "Select District"}
+                            </option>
+                            {districts.map((district) => (
+                                <option key={district.id} value={String(district.id)}>
+                                    {district.districtName}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                />
+                <small className="text-danger">{errors.districtId?.message}</small>
             </div>
 
-
-            {/* =================================================
-                Village
-            ================================================= */}
-
+            {/* Village */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Village
-                </label>
-
-                <select
-                    className="form-select"
-                    {...register("villageId", {
-                        required: "Village is required"
-                    })}
-                    onChange={handleVillageChange}
-                    disabled={
-                        !selectedDistrictId ||
-                        loadingVillages
-                    }
-                >
-
-                    <option value="">
-                        {loadingVillages
-                            ? "Loading Villages..."
-                            : "Select Village"
-                        }
-                    </option>
-
-                    {villages.map(village => (
-
-                        <option
-                            key={village.id}
-                            value={village.id}
+                <label className="form-label">Village</label>
+                <Controller
+                    name="villageId"
+                    control={control}
+                    rules={{ required: "Village is required" }}
+                    render={({ field }) => (
+                        <select
+                            className="form-select"
+                            value={field.value || ""}
+                            onChange={(e) => handleVillageChange(e.target.value)}
+                            disabled={!selectedDistrictId || loadingVillages}
                         >
-                            {village.villageName}
-                        </option>
-
-                    ))}
-
-                </select>
-
-                <small className="text-danger">
-                    {errors.villageId?.message}
-                </small>
-
+                            <option value="">
+                                {loadingVillages ? "Loading Villages..." : "Select Village"}
+                            </option>
+                            {villages.map((village) => (
+                                <option key={village.id} value={String(village.id)}>
+                                    {village.villageName}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                />
+                <small className="text-danger">{errors.villageId?.message}</small>
             </div>
 
-
-            {/* =================================================
-                Family
-            ================================================= */}
-
+            {/* Family */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Family
-                </label>
-
-                <select
-                    className="form-select"
-                    {...register("familyId", {
-                        required: "Family is required"
-                    })}
-                    disabled={
-                        !selectedVillageId ||
-                        loadingFamilies
-                    }
-                >
-
-                    <option value="">
-                        {loadingFamilies
-                            ? "Loading Families..."
-                            : "Select Family"
-                        }
-                    </option>
-
-                    {families.map(familyItem => (
-
-                        <option
-                            key={familyItem.id}
-                            value={familyItem.id}
+                <label className="form-label">Family</label>
+                <Controller
+                    name="familyId"
+                    control={control}
+                    rules={{ required: "Family is required" }}
+                    render={({ field }) => (
+                        <select
+                            className="form-select"
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            disabled={!selectedVillageId || loadingFamilies}
                         >
-                            {familyItem.familyHeadName}
-                            {" - "}
-                            {familyItem.familyCode}
-                        </option>
-
-                    ))}
-
-                </select>
-
-                <small className="text-danger">
-                    {errors.familyId?.message}
-                </small>
-
+                            <option value="">
+                                {loadingFamilies ? "Loading Families..." : "Select Family"}
+                            </option>
+                            {families.map((family) => (
+                                <option key={family.id} value={String(family.id)}>
+                                    {family.familyHeadName}{" - "}{family.familyCode}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                />
+                <small className="text-danger">{errors.familyId?.message}</small>
             </div>
 
-
-            {/* =================================================
-                First Name / Last Name
-            ================================================= */}
-
+            {/* First Name / Last Name */}
             <div className="row">
-
                 <div className="col-md-6">
-
                     <div className="mb-3">
-
                         <label className="form-label">
                             First Name
                         </label>
@@ -1063,24 +668,18 @@ function MemberForm({
                             type="text"
                             className="form-control"
                             {...register("firstName", {
-                                required:
-                                    "First Name is required"
+                                required: "First Name is required"
                             })}
                         />
 
                         <small className="text-danger">
                             {errors.firstName?.message}
                         </small>
-
                     </div>
-
                 </div>
 
-
                 <div className="col-md-6">
-
                     <div className="mb-3">
-
                         <label className="form-label">
                             Last Name
                         </label>
@@ -1090,23 +689,13 @@ function MemberForm({
                             className="form-control"
                             {...register("lastName")}
                         />
-
                     </div>
-
                 </div>
-
             </div>
 
-
-            {/* =================================================
-                Gender
-            ================================================= */}
-
+            {/* Gender */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Gender
-                </label>
+                <label className="form-label">Gender</label>
 
                 <select
                     className="form-select"
@@ -1114,42 +703,21 @@ function MemberForm({
                         required: "Gender is required"
                     })}
                 >
-
-                    <option value="">
-                        Select Gender
-                    </option>
-
-                    <option value="MALE">
-                        Male
-                    </option>
-
-                    <option value="FEMALE">
-                        Female
-                    </option>
-
-                    <option value="OTHER">
-                        Other
-                    </option>
-
+                    <option value="">Select Gender</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
                 </select>
 
                 <small className="text-danger">
                     {errors.gender?.message}
                 </small>
-
             </div>
 
-
-            {/* =================================================
-                Date Of Birth / Alive
-            ================================================= */}
-
+            {/* Date Of Birth / Birth Time / Alive */}
             <div className="row">
-
-                <div className="col-md-6">
-
+                <div className="col-md-4">
                     <div className="mb-3">
-
                         <label className="form-label">
                             Date Of Birth
                         </label>
@@ -1158,49 +726,55 @@ function MemberForm({
                             type="date"
                             className="form-control"
                             {...register("dateOfBirth", {
-                                required:
-                                    "Date of Birth is required"
+                                required: "Date of Birth is required"
                             })}
                         />
 
                         <small className="text-danger">
                             {errors.dateOfBirth?.message}
                         </small>
-
                     </div>
-
                 </div>
 
-
-                <div className="col-md-6 d-flex align-items-center">
-
-                    <div className="form-check mt-2">
+                <div className="col-md-4">
+                    <div className="mb-3">
+                        <label className="form-label">
+                            Birth Time
+                        </label>
 
                         <input
-                            type="checkbox"
-                            className="form-check-input"
-                            {...register("alive")}
+                            type="time"
+                            className="form-control"
+                            {...register("birthTime")}
+                        />
+                    </div>
+                </div>
+
+                <div className="col-md-4 d-flex align-items-center">
+                    <div className="form-check mt-2">
+                        <Controller
+                            name="alive"
+                            control={control}
+                            render={({ field }) => (
+                                <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    checked={Boolean(field.value)}
+                                    onChange={(e) => handleAliveChange(e.target.checked)}
+                                />
+                            )}
                         />
 
                         <label className="form-check-label">
                             Alive
                         </label>
-
                     </div>
-
                 </div>
-
             </div>
 
-
-            {/* =================================================
-                Date Of Death
-            ================================================= */}
-
+            {/* Date Of Death */}
             {!alive && (
-
                 <div className="mb-3">
-
                     <label className="form-label">
                         Date Of Death
                     </label>
@@ -1209,26 +783,18 @@ function MemberForm({
                         type="date"
                         className="form-control"
                         {...register("dateOfDeath", {
-                            required:
-                                "Date of Death is required"
+                            required: "Date of Death is required"
                         })}
                     />
 
                     <small className="text-danger">
                         {errors.dateOfDeath?.message}
                     </small>
-
                 </div>
-
             )}
 
-
-            {/* =================================================
-                Relationship
-            ================================================= */}
-
+            {/* Relationship */}
             <div className="mb-3">
-
                 <label className="form-label">
                     Relationship
                 </label>
@@ -1236,66 +802,28 @@ function MemberForm({
                 <select
                     className="form-select"
                     {...register("relationship", {
-                        required:
-                            "Relationship is required"
+                        required: "Relationship is required"
                     })}
                 >
-
-                    <option value="">
-                        Select
-                    </option>
-
-                    <option value="HEAD">
-                        Head
-                    </option>
-
-                    <option value="SPOUSE">
-                        Spouse
-                    </option>
-
-                    <option value="SON">
-                        Son
-                    </option>
-
-                    <option value="DAUGHTER">
-                        Daughter
-                    </option>
-
-                    <option value="FATHER">
-                        Father
-                    </option>
-
-                    <option value="MOTHER">
-                        Mother
-                    </option>
-
-                    <option value="BROTHER">
-                        Brother
-                    </option>
-
-                    <option value="SISTER">
-                        Sister
-                    </option>
-
-                    <option value="OTHER">
-                        Other
-                    </option>
-
+                    <option value="">Select</option>
+                    <option value="HEAD">Head</option>
+                    <option value="SPOUSE">Spouse</option>
+                    <option value="SON">Son</option>
+                    <option value="DAUGHTER">Daughter</option>
+                    <option value="FATHER">Father</option>
+                    <option value="MOTHER">Mother</option>
+                    <option value="BROTHER">Brother</option>
+                    <option value="SISTER">Sister</option>
+                    <option value="OTHER">Other</option>
                 </select>
 
                 <small className="text-danger">
                     {errors.relationship?.message}
                 </small>
-
             </div>
 
-
-            {/* =================================================
-                Marital Status
-            ================================================= */}
-
+            {/* Marital Status */}
             <div className="mb-3">
-
                 <label className="form-label">
                     Marital Status
                 </label>
@@ -1303,49 +831,24 @@ function MemberForm({
                 <select
                     className="form-select"
                     {...register("maritalStatus", {
-                        required:
-                            "Marital Status is required"
+                        required: "Marital Status is required"
                     })}
                 >
-
-                    <option value="">
-                        Select
-                    </option>
-
-                    <option value="SINGLE">
-                        Single
-                    </option>
-
-                    <option value="MARRIED">
-                        Married
-                    </option>
-
-                    <option value="DIVORCED">
-                        Divorced
-                    </option>
-
-                    <option value="WIDOW">
-                        Widow
-                    </option>
-
+                    <option value="">Select</option>
+                    <option value="SINGLE">Single</option>
+                    <option value="MARRIED">Married</option>
+                    <option value="DIVORCED">Divorced</option>
+                    <option value="WIDOW">Widow</option>
                 </select>
 
                 <small className="text-danger">
                     {errors.maritalStatus?.message}
                 </small>
-
             </div>
 
-
-            {/* =================================================
-                Mobile
-            ================================================= */}
-
+            {/* Mobile */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Mobile No
-                </label>
+                <label className="form-label">Mobile No</label>
 
                 <input
                     type="text"
@@ -1353,19 +856,11 @@ function MemberForm({
                     className="form-control"
                     {...register("mobileNo")}
                 />
-
             </div>
 
-
-            {/* =================================================
-                Aadhaar
-            ================================================= */}
-
+            {/* Aadhaar */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Aadhaar No
-                </label>
+                <label className="form-label">Aadhaar No</label>
 
                 <input
                     type="text"
@@ -1373,94 +868,57 @@ function MemberForm({
                     className="form-control"
                     {...register("aadhaarNo")}
                 />
-
             </div>
 
-
-            {/* =================================================
-                Occupation
-            ================================================= */}
-
+            {/* Occupation */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Occupation
-                </label>
+                <label className="form-label">Occupation</label>
 
                 <input
                     type="text"
                     className="form-control"
                     {...register("occupation")}
                 />
-
             </div>
 
-
-            {/* =================================================
-                Education
-            ================================================= */}
-
+            {/* Education */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Education
-                </label>
+                <label className="form-label">Education</label>
 
                 <input
                     type="text"
                     className="form-control"
                     {...register("education")}
                 />
-
             </div>
 
-
-            {/* =================================================
-                Gotra
-            ================================================= */}
-
+            {/* Gotra */}
             <div className="mb-3">
+                <label className="form-label">Gotra</label>
 
-                <label className="form-label">
-                    Gotra
-                </label>
-
-                <select
-                    className="form-select"
-                    {...register("gotra")}
-                    value={selectedGotra || ""}
-                    onChange={handleGotraChange}
-                >
-
-                    <option value="">
-                        Select Gotra
-                    </option>
-
-                    {gotras.map((gotra, index) => (
-
-                        <option
-                            key={index}
-                            value={gotra.gotraName}
+                <Controller
+                    name="gotra"
+                    control={control}
+                    render={({ field }) => (
+                        <select
+                            className="form-select"
+                            value={field.value || ""}
+                            onChange={(e) => handleGotraChange(e.target.value)}
                         >
-                            {gotra.gotraName}
-                        </option>
-
-                    ))}
-
-                </select>
-
+                            <option value="">Select Gotra</option>
+                            {gotras.map(gotra => (
+                                <option key={gotra.gotraName} value={gotra.gotraName}>
+                                    {gotra.gotraName}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                />
             </div>
 
-
-            {/* =================================================
-                Pata
-            ================================================= */}
-
+            {/* Pata */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Pata
-                </label>
+                <label className="form-label">Pata</label>
 
                 <input
                     type="text"
@@ -1468,59 +926,44 @@ function MemberForm({
                     {...register("pata")}
                     readOnly
                 />
-
             </div>
 
-
-            {/* =================================================
-                Kuldevi
-            ================================================= */}
-
+            {/* Kuldevi */}
             <div className="mb-3">
-
-                <label className="form-label">
-                    Kuldevi
-                </label>
+                <label className="form-label">Kuldevi</label>
 
                 <input
                     type="text"
                     className="form-control"
                     {...register("kuldevi")}
                 />
-
             </div>
 
-
-            {/* =================================================
-                Buttons
-            ================================================= */}
-
+            {/* Buttons */}
             <div className="mt-4">
-
                 <button
                     type="submit"
                     className="btn btn-primary"
+                    disabled={isSubmitting}
                 >
-                    {member
-                        ? "Update"
-                        : "Save"
-                    }
+                    {isSubmitting
+                        ? "Saving..."
+                        : member
+                            ? "Update"
+                            : "Save"}
                 </button>
-
 
                 <button
                     type="button"
                     className="btn btn-secondary ms-2"
                     onClick={onClose}
+                    disabled={isSubmitting}
                 >
                     Cancel
                 </button>
-
             </div>
-
         </form>
     );
 }
-
 
 export default MemberForm;
