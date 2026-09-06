@@ -90,11 +90,6 @@ function Navbar() {
 
                 <div className="d-flex align-items-center">
 
-                    <input
-                        className="form-control me-3"
-                        style={{ width: "250px" }}
-                        placeholder="Search..."
-                    />
                     <select
                         className="form-select form-select-sm me-3"
                         style={{ width: "120px" }}

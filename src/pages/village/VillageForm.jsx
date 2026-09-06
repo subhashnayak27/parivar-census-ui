@@ -59,59 +59,33 @@ function VillageForm({
         if (!village || states.length === 0) {
 
             reset({
-
                 stateId: "",
-
                 districtId: "",
-
-                villageCode: "",
-
                 villageName: "",
-
                 postalCode: ""
-
             });
 
             setDistricts([]);
-
             return;
-
         }
 
         const loadEditData = async () => {
-
             try {
-
                 const response = await getDistrictsByState(village.stateId);
-
                 setDistricts(response.data.data);
 
                 reset({
-
                     stateId: String(village.stateId),
-
                     districtId: String(village.districtId),
-
-                    villageCode: village.villageCode,
-
                     villageName: village.villageName,
-
                     postalCode: village.postalCode
-
                 });
-
-            }
-
-            catch (error) {
-
+            } catch (error) {
                 console.error(error);
-
             }
-
         };
 
         loadEditData();
-
     }, [village, states, reset]);
 
     const loadStates = async () => {
@@ -304,36 +278,6 @@ function VillageForm({
                 <small className="text-danger">
 
                     {errors.districtId?.message}
-
-                </small>
-
-            </div>
-
-            {/* Village Code */}
-
-            <div className="mb-3">
-
-                <label className="form-label">
-
-                    Village Code
-
-                </label>
-
-                <input
-
-                    className="form-control"
-
-                    {...register("villageCode", {
-
-                        required: "Village Code is required"
-
-                    })}
-
-                />
-
-                <small className="text-danger">
-
-                    {errors.villageCode?.message}
 
                 </small>
 

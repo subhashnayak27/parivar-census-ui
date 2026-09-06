@@ -108,7 +108,6 @@ function FamilyForm({
                 stateId: String(family.stateId),
                 districtId: "",
                 villageId: "",
-                familyCode: family.familyCode || "",
                 familyHeadName: family.familyHeadName || "",
                 address: family.address || "",
                 mobileNo: family.mobileNo || "",
@@ -403,30 +402,6 @@ function FamilyForm({
                     {errors.villageId?.message}
 
                 </small>
-
-            </div>
-
-            {/* Family Code */}
-
-            <div className="mb-3">
-
-                <label className="form-label">
-
-                    Family Code
-
-                </label>
-
-                <input
-
-                    className="form-control"
-
-                    {...register("familyCode", {
-
-                        required: "Family Code is required"
-
-                    })}
-
-                />
 
             </div>
 
