@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 import {
     createMember,
@@ -13,75 +14,35 @@ import { getVillagesByDistrict } from "../../services/villageService";
 import { getFamiliesByVillage } from "../../services/familyService";
 
 const gotras = [
-    {
-        gotraName: "Bharadwaj",
-        pata: "Pandey, Pata, Ghuratiya, Setwara"
-    },
-    {
-        gotraName: "Vats",
-        pata: "Varmele, Chenthara, Vajanya, Dubey"
-    },
-    {
-        gotraName: "Kashyap",
-        pata: "Nekara, Tripathi, Tiwari"
-    },
-    {
-        gotraName: "Katyayan",
-        pata: "Pariya, Guta, Masand, Chaubey"
-    },
-    {
-        gotraName: "Gautam (Dhananjay)",
-        pata: "Joshi"
-    },
-    {
-        gotraName: "Garg",
-        pata: "Jatariya, Gangele"
-    },
-    {
-        gotraName: "Shandilya",
-        pata: "Bhatt"
-    },
-    {
-        gotraName: "Kavist",
-        pata: "Nagar, Pathak"
-    },
-    {
-        gotraName: "Upamanyu",
-        pata: "Agariya"
-    },
-    {
-        gotraName: "Sankritya",
-        pata: "Vinda"
-    },
-    {
-        gotraName: "Atri",
-        pata: "Rayriya, Mishra"
-    },
-    {
-        gotraName: "Parashar",
-        pata: "Laktakiya, Patairiya"
-    },
-    {
-        gotraName: "Kaushal (Kashyap)",
-        pata: "Vishwamitra"
-    },
-    {
-        gotraName: "Sanakadik",
-        pata: "Pidoliya, Upadhyay"
-    },
-    {
-        gotraName: "Yamdagni",
-        pata: "Kyore"
-    },
-    {
-        gotraName: "Durvasa",
-        pata: "Dodansiya, Pujari"
-    },
-    {
-        gotraName: "Vashishtha",
-        pata: "Jhank, Purohit"
-    }
+    { gotraName: "Bharadwaj", gotraNameHi: "भारद्वाज", patas: [["Pandey", "पांडेय"], ["Patha", "पठा"], ["Ghuratiya", "घुरतिया"], ["Setwara", "सेटवारा"]] },
+    { gotraName: "Vats", gotraNameHi: "वत्स", patas: [["Varmele", "वरमेले"], ["Chenthara", "चेंथारा"], ["Vajanya", "वाजान्या"], ["Dubey", "दुबे"]] },
+    { gotraName: "Kashyap", gotraNameHi: "कश्यप", patas: [["Nekara", "नेकरा"], ["Tripathi", "त्रिपाठी"], ["Tiwari", "तिवारी"]] },
+    { gotraName: "Katyayan", gotraNameHi: "कात्यायन", patas: [["Pariya", "परिया"], ["Guta", "गुता"], ["Masand", "मसंद"], ["Chaubey", "चौबे"]] },
+    { gotraName: "Gautam (Dhananjay)", gotraNameHi: "गौतम (धनंजय)", patas: [["Joshi", "जोशी"]] },
+    { gotraName: "Garg", gotraNameHi: "गार्ग", patas: [["Jatariya", "जटरिया"], ["Gangele", "गंगेले"]] },
+    { gotraName: "Shandilya", gotraNameHi: "शांडिल्य", patas: [["Bhatt", "भट्ट"]] },
+    { gotraName: "Kavist", gotraNameHi: "कविष्ट", patas: [["Nagar", "नागर"], ["Pathak", "पाठक"]] },
+    { gotraName: "Upamanyu", gotraNameHi: "उपमन्यु", patas: [["Agariya", "अगरिया"]] },
+    { gotraName: "Sankritya", gotraNameHi: "सांक्रित्य", patas: [["Vinda", "विंदा"]] },
+    { gotraName: "Atri", gotraNameHi: "अत्रि", patas: [["Rayriya", "रैरिया"], ["Mishra", "मिश्र"]] },
+    { gotraName: "Parashar", gotraNameHi: "पराशर", patas: [["Laktakiya", "लकटाकिया"], ["Patairiya", "पटैरिया"]] },
+    { gotraName: "Kaushal (Kashyap)", gotraNameHi: "कौशल (कश्यप)", patas: [["Vishwamitra", "विश्वामित्र"]] },
+    { gotraName: "Sanakadik", gotraNameHi: "सनकादिक", patas: [["Pidoliya", "पिडोलिया"], ["Upadhyay", "उपाध्याय"]] },
+    { gotraName: "Yamdagni", gotraNameHi: "यमदग्नि", patas: [["Kyore", "क्योरे"]] },
+    { gotraName: "Durvasa", gotraNameHi: "दुर्वासा", patas: [["Dodansiya", "दोडांसिया"], ["Pujari", "पुजारी"]] },
+    { gotraName: "Vashishtha", gotraNameHi: "वशिष्ठ", patas: [["Jhank", "झांक"], ["Purohit", "पुरोहित"]] }
 ];
+
+// Keep the API value canonical in English while the UI can display Hindi/English.
+const getGotraByValue = (value) =>
+    gotras.find(
+        (item) => item.gotraName === value || item.gotraNameHi === value
+    );
+
+const getPatasForGotra = (gotraName) => {
+    const gotra = getGotraByValue(gotraName);
+    return gotra?.patas || [];
+};
 
 const EMPTY_FORM = {
     stateId: "",
@@ -127,6 +88,8 @@ const normalizeLookupList = (payload) => {
 };
 
 function MemberForm({ member, onSuccess, onClose }) {
+    const { i18n } = useTranslation();
+
     const {
         register,
         control,
@@ -153,7 +116,17 @@ function MemberForm({ member, onSuccess, onClose }) {
     const selectedDistrictId = watch("districtId");
     const selectedVillageId = watch("villageId");
     const selectedGotra = watch("gotra");
+    const selectedPata = watch("pata");
     const alive = watch("alive");
+
+    const availablePatas = getPatasForGotra(selectedGotra);
+    const currentLanguage = i18n.language === "hi" ? "hi" : "en";
+
+    const getGotraLabel = (gotra) =>
+        currentLanguage === "hi" ? gotra.gotraNameHi : gotra.gotraName;
+
+    const getPataLabel = (pata) =>
+        currentLanguage === "hi" ? pata[1] : pata[0];
 
     /* =========================================================
        Load states once
@@ -246,8 +219,14 @@ function MemberForm({ member, onSuccess, onClose }) {
             occupation: member.occupation ?? "",
             education: member.education ?? "",
 
-            gotra: member.gotra ?? "",
-            pata: member.pata ?? "",
+            gotra: getGotraByValue(member.gotra)?.gotraName || member.gotra || "",
+            pata: (() => {
+                const gotra = getGotraByValue(member.gotra);
+                const pata = gotra?.patas?.find(
+                    (item) => item[0] === member.pata || item[1] === member.pata
+                );
+                return pata?.[0] || member.pata || "";
+            })(),
             kuldevi: member.kuldevi ?? ""
         };
 
@@ -466,17 +445,19 @@ function MemberForm({ member, onSuccess, onClose }) {
     };
 
     const handleGotraChange = (gotraName) => {
-        const gotra = gotras.find(
-            item => item.gotraName === gotraName
-        );
+        const patas = getPatasForGotra(gotraName);
 
         setValue("gotra", gotraName, {
             shouldDirty: true,
             shouldValidate: true
         });
 
-        setValue("pata", gotra?.pata ?? "", {
-            shouldDirty: true
+        // If there is only one Pata, selecting Gotra is enough.
+        // If there are multiple Pata values, leave Pata empty so the user
+        // must explicitly choose the correct one.
+        setValue("pata", patas.length === 1 ? patas[0][0] : "", {
+            shouldDirty: true,
+            shouldValidate: true
         });
     };
 
@@ -906,9 +887,9 @@ function MemberForm({ member, onSuccess, onClose }) {
                             onChange={(e) => handleGotraChange(e.target.value)}
                         >
                             <option value="">Select Gotra</option>
-                            {gotras.map(gotra => (
+                            {gotras.map((gotra) => (
                                 <option key={gotra.gotraName} value={gotra.gotraName}>
-                                    {gotra.gotraName}
+                                    {getGotraLabel(gotra)}
                                 </option>
                             ))}
                         </select>
@@ -920,11 +901,44 @@ function MemberForm({ member, onSuccess, onClose }) {
             <div className="mb-3">
                 <label className="form-label">Pata</label>
 
-                <input
-                    type="text"
-                    className="form-control"
-                    {...register("pata")}
-                    readOnly
+                <Controller
+                    name="pata"
+                    control={control}
+                    rules={{
+                        required: selectedGotra && availablePatas.length > 1
+                            ? "Please select Pata"
+                            : false
+                    }}
+                    render={({ field }) => (
+                        <>
+                            <select
+                                className={`form-select ${errors.pata ? "is-invalid" : ""}`}
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                                disabled={!selectedGotra || availablePatas.length === 0}
+                            >
+                                <option value="">
+                                    {!selectedGotra
+                                        ? "Select Gotra first"
+                                        : availablePatas.length > 1
+                                            ? "Select Pata"
+                                            : "Select Pata"}
+                                </option>
+
+                                {availablePatas.map((pata) => (
+                                    <option key={pata[0]} value={pata[0]}>
+                                        {getPataLabel(pata)}
+                                    </option>
+                                ))}
+                            </select>
+
+                            {errors.pata && (
+                                <div className="invalid-feedback">
+                                    {errors.pata.message}
+                                </div>
+                            )}
+                        </>
+                    )}
                 />
             </div>
 
